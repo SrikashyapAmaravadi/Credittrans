@@ -260,14 +260,8 @@ def build_interactive_dashboard():
     <header>
         <div class="header-top">
             <div class="brand-container">
-                <!-- Bennett University Official Crest SVG -->
-                <svg class="crest-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="100" height="100" rx="18" fill="#001833"/>
-                    <path d="M50 12 L82 30 L82 64 C82 78 50 90 50 90 C50 90 18 78 18 64 L18 30 Z" fill="#002147" stroke="#F59E0B" stroke-width="3"/>
-                    <path d="M50 25 L50 75 M30 46 L70 46 M32 62 L68 62" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
-                    <circle cx="50" cy="25" r="4.5" fill="#D97706"/>
-                    <path d="M42 35 L50 28 L58 35" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <!-- Bennett University Official Logo -->
+                <img src="bennett_logo.png" style="height:72px; width:auto; border-radius:10px; background:#FFFFFF; padding:4px 6px; box-shadow:0 4px 8px rgba(0,0,0,0.25);" alt="Bennett University Logo">
                 <div>
                     <div class="institution-title">BENNETT UNIVERSITY — THE TIMES GROUP</div>
                     <div class="institution-sub">SCHOOL OF COMPUTER SCIENCE ENGINEERING & TECHNOLOGY</div>

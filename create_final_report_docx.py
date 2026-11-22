@@ -180,6 +180,16 @@ def build_docx(output_path):
     # ==========================
     # TITLE PAGE
     # ==========================
+    logo_path = ROOT / 'results' / 'bennett_logo.png'
+    if logo_path.exists():
+        p_logo = doc.add_paragraph()
+        p_logo.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_logo.paragraph_format.space_before = Pt(10)
+        p_logo.paragraph_format.space_after = Pt(12)
+        doc.add_picture(str(logo_path), width=Inches(1.8))
+        # Center the picture
+        doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+
     p_inst = doc.add_paragraph()
     p_inst.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r_inst = p_inst.add_run("BENNETT UNIVERSITY\n")
