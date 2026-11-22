@@ -1,0 +1,432 @@
+{
+  "input_path": "data/credit_card_fraud.csv",
+  "rows": 15000000,
+  "columns": 34,
+  "schema": {
+    "type": "struct",
+    "fields": [
+      {
+        "name": "transaction_amount",
+        "type": "double",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "transaction_amount_bin",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "avg_amount_deviation_sigma",
+        "type": "double",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "merchant_category",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "merchant_risk_score",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "merchant_category_vs_history",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "geo_velocity_kmh",
+        "type": "double",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "geo_velocity_bin",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "geo_distance_km",
+        "type": "double",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "geo_distance_bin",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "merchant_location",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "country_consistency",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "ip_address_type",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "device_fingerprint_match",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "session_duration_sec",
+        "type": "double",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "session_duration_bin",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "network_carrier_type",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "cards_on_device_30d",
+        "type": "integer",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "cvv_match_status",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "three_ds_auth_result",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "tokenization_used",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "failed_attempts_before_success",
+        "type": "integer",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "transaction_velocity_1h",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "time_of_transaction",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "account_credential_change_recency",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "card_present_cnp",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "order_shipping_speed",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "account_age_days",
+        "type": "integer",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "chargeback_history_count",
+        "type": "integer",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "customer_id",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "transaction_id",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "segment",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "customer_type",
+        "type": "string",
+        "nullable": true,
+        "metadata": {}
+      },
+      {
+        "name": "is_fraud",
+        "type": "integer",
+        "nullable": true,
+        "metadata": {}
+      }
+    ]
+  },
+  "column_names": [
+    "transaction_amount",
+    "transaction_amount_bin",
+    "avg_amount_deviation_sigma",
+    "merchant_category",
+    "merchant_risk_score",
+    "merchant_category_vs_history",
+    "geo_velocity_kmh",
+    "geo_velocity_bin",
+    "geo_distance_km",
+    "geo_distance_bin",
+    "merchant_location",
+    "country_consistency",
+    "ip_address_type",
+    "device_fingerprint_match",
+    "session_duration_sec",
+    "session_duration_bin",
+    "network_carrier_type",
+    "cards_on_device_30d",
+    "cvv_match_status",
+    "three_ds_auth_result",
+    "tokenization_used",
+    "failed_attempts_before_success",
+    "transaction_velocity_1h",
+    "time_of_transaction",
+    "account_credential_change_recency",
+    "card_present_cnp",
+    "order_shipping_speed",
+    "account_age_days",
+    "chargeback_history_count",
+    "customer_id",
+    "transaction_id",
+    "segment",
+    "customer_type",
+    "is_fraud"
+  ],
+  "sample_rows": [
+    {
+      "transaction_amount": 263.57,
+      "transaction_amount_bin": "medium",
+      "avg_amount_deviation_sigma": 4.74,
+      "merchant_category": "grocery",
+      "merchant_risk_score": "low_risk",
+      "merchant_category_vs_history": "frequent_category",
+      "geo_velocity_kmh": 1.4,
+      "geo_velocity_bin": "normal",
+      "geo_distance_km": 3.0,
+      "geo_distance_bin": "same_location",
+      "merchant_location": "home_city",
+      "country_consistency": "same_country",
+      "ip_address_type": "residential",
+      "device_fingerprint_match": "known_device",
+      "session_duration_sec": 266.9,
+      "session_duration_bin": "slow",
+      "network_carrier_type": "datacenter_hosting",
+      "cards_on_device_30d": 1,
+      "cvv_match_status": "icvv_match",
+      "three_ds_auth_result": "challenge_fail",
+      "tokenization_used": "raw_pan_online",
+      "failed_attempts_before_success": 0,
+      "transaction_velocity_1h": "within_normal",
+      "time_of_transaction": "late_night_0_5",
+      "account_credential_change_recency": "no_recent_change",
+      "card_present_cnp": "cnp_moto",
+      "order_shipping_speed": "in_store_pickup",
+      "account_age_days": 3389,
+      "chargeback_history_count": 0,
+      "customer_id": "CUST_A_0107814",
+      "transaction_id": "TXN_0_0000000",
+      "segment": "A_established",
+      "customer_type": "customer_based",
+      "is_fraud": 0
+    },
+    {
+      "transaction_amount": 109.24,
+      "transaction_amount_bin": "medium",
+      "avg_amount_deviation_sigma": 0.57,
+      "merchant_category": "electronics",
+      "merchant_risk_score": "high_risk",
+      "merchant_category_vs_history": "frequent_category",
+      "geo_velocity_kmh": 1.4,
+      "geo_velocity_bin": "normal",
+      "geo_distance_km": 0.6,
+      "geo_distance_bin": "same_location",
+      "merchant_location": "same_country",
+      "country_consistency": "same_country",
+      "ip_address_type": "corporate",
+      "device_fingerprint_match": "new_device",
+      "session_duration_sec": 50.9,
+      "session_duration_bin": "normal",
+      "network_carrier_type": "wifi",
+      "cards_on_device_30d": 2,
+      "cvv_match_status": "cvv2_match",
+      "three_ds_auth_result": "frictionless_pass",
+      "tokenization_used": "emv_chip_token",
+      "failed_attempts_before_success": 0,
+      "transaction_velocity_1h": "within_normal",
+      "time_of_transaction": "evening_18_24",
+      "account_credential_change_recency": "no_recent_change",
+      "card_present_cnp": "cnp_online",
+      "order_shipping_speed": "same_day",
+      "account_age_days": 1059,
+      "chargeback_history_count": 0,
+      "customer_id": "CUST_A_0016056",
+      "transaction_id": "TXN_0_0000001",
+      "segment": "A_established",
+      "customer_type": "customer_based",
+      "is_fraud": 0
+    },
+    {
+      "transaction_amount": 118.73,
+      "transaction_amount_bin": "medium",
+      "avg_amount_deviation_sigma": 0.71,
+      "merchant_category": "travel",
+      "merchant_risk_score": "high_risk",
+      "merchant_category_vs_history": "frequent_category",
+      "geo_velocity_kmh": 89.9,
+      "geo_velocity_bin": "fast",
+      "geo_distance_km": 4.9,
+      "geo_distance_bin": "same_location",
+      "merchant_location": "home_city",
+      "country_consistency": "frequent_travel_country",
+      "ip_address_type": "corporate",
+      "device_fingerprint_match": "known_device",
+      "session_duration_sec": 129.3,
+      "session_duration_bin": "normal",
+      "network_carrier_type": "wifi",
+      "cards_on_device_30d": 2,
+      "cvv_match_status": "cvv2_match",
+      "three_ds_auth_result": "frictionless_pass",
+      "tokenization_used": "issuer_token",
+      "failed_attempts_before_success": 0,
+      "transaction_velocity_1h": "within_normal",
+      "time_of_transaction": "afternoon_12_18",
+      "account_credential_change_recency": "no_recent_change",
+      "card_present_cnp": "card_present_swipe",
+      "order_shipping_speed": "overnight",
+      "account_age_days": 948,
+      "chargeback_history_count": 0,
+      "customer_id": "CUST_A_0079084",
+      "transaction_id": "TXN_0_0000002",
+      "segment": "A_established",
+      "customer_type": "customer_based",
+      "is_fraud": 0
+    },
+    {
+      "transaction_amount": 59.16,
+      "transaction_amount_bin": "medium",
+      "avg_amount_deviation_sigma": 1.75,
+      "merchant_category": "travel",
+      "merchant_risk_score": "high_risk",
+      "merchant_category_vs_history": "frequent_category",
+      "geo_velocity_kmh": 0.2,
+      "geo_velocity_bin": "normal",
+      "geo_distance_km": 3.0,
+      "geo_distance_bin": "same_location",
+      "merchant_location": "home_city",
+      "country_consistency": "frequent_travel_country",
+      "ip_address_type": "corporate",
+      "device_fingerprint_match": "known_device",
+      "session_duration_sec": 64.7,
+      "session_duration_bin": "normal",
+      "network_carrier_type": "mobile_data",
+      "cards_on_device_30d": 2,
+      "cvv_match_status": "cvv2_match",
+      "three_ds_auth_result": "challenge_fail",
+      "tokenization_used": "issuer_token",
+      "failed_attempts_before_success": 0,
+      "transaction_velocity_1h": "within_normal",
+      "time_of_transaction": "afternoon_12_18",
+      "account_credential_change_recency": "no_recent_change",
+      "card_present_cnp": "cnp_online",
+      "order_shipping_speed": "standard",
+      "account_age_days": 1959,
+      "chargeback_history_count": 0,
+      "customer_id": "CUST_A_0002945",
+      "transaction_id": "TXN_0_0000003",
+      "segment": "A_established",
+      "customer_type": "customer_based",
+      "is_fraud": 0
+    },
+    {
+      "transaction_amount": 84.51,
+      "transaction_amount_bin": "medium",
+      "avg_amount_deviation_sigma": 1.23,
+      "merchant_category": "healthcare",
+      "merchant_risk_score": "low_risk",
+      "merchant_category_vs_history": "frequent_category",
+      "geo_velocity_kmh": 20.9,
+      "geo_velocity_bin": "normal",
+      "geo_distance_km": 2.5,
+      "geo_distance_bin": "same_location",
+      "merchant_location": "same_country",
+      "country_consistency": "same_country",
+      "ip_address_type": "residential",
+      "device_fingerprint_match": "new_device",
+      "session_duration_sec": 43.0,
+      "session_duration_bin": "normal",
+      "network_carrier_type": "corporate_vpn",
+      "cards_on_device_30d": 1,
+      "cvv_match_status": "cvv2_match",
+      "three_ds_auth_result": "challenge_pass",
+      "tokenization_used": "network_token_wallet",
+      "failed_attempts_before_success": 0,
+      "transaction_velocity_1h": "within_normal",
+      "time_of_transaction": "morning_6_12",
+      "account_credential_change_recency": "no_recent_change",
+      "card_present_cnp": "contactless",
+      "order_shipping_speed": "standard",
+      "account_age_days": 1932,
+      "chargeback_history_count": 0,
+      "customer_id": "CUST_A_0106258",
+      "transaction_id": "TXN_0_0000004",
+      "segment": "A_established",
+      "customer_type": "customer_based",
+      "is_fraud": 0
+    }
+  ]
+}

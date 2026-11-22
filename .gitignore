@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+/data/
+results/raw/
+results/cleaned/
+results/features/
+results/risk_scored/
+results/predictions/
+results/models/
+results/.matplotlib/
+*.log
+

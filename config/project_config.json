@@ -1,0 +1,24 @@
+{
+  "input_path": "data/credit_card_fraud.csv",
+  "output_base": "results",
+  "label_column": "is_fraud",
+  "positive_label": "1",
+  "negative_label": "0",
+  "profile_column": "merchant_category",
+  "timestamp_column": "",
+  "transaction_type_column": "card_present_cnp",
+  "amount_column": "transaction_amount",
+  "exclude_columns": ["customer_id", "transaction_id"],
+  "max_categories": 100,
+  "train_ratio": 0.8,
+  "seed": 42,
+  "sample_fraction": 0.1,
+  "input_format": "csv",
+  "csv_options": {
+    "header": "true",
+    "inferSchema": "true",
+    "mode": "PERMISSIVE",
+    "escape": "\"",
+    "quote": "\""
+  }
+}
