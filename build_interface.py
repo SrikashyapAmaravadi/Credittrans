@@ -26,12 +26,14 @@ def build_interactive_dashboard():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CreditTransAct — Fraud Analytics Verification Interface</title>
+    <title>Bennett University — CreditTransAct Fraud Analytics Platform</title>
     <style>
         :root {{
-            --primary: #1B365D;
-            --primary-light: #2A4D7E;
+            --primary: #002147;
+            --primary-light: #1B365D;
+            --secondary: #2A4D7E;
             --accent: #D97706;
+            --gold: #F59E0B;
             --success: #059669;
             --purple: #7C3AED;
             --danger: #DC2626;
@@ -49,23 +51,28 @@ def build_interactive_dashboard():
             line-height: 1.5;
             padding: 24px;
         }}
-        .container {{ max-width: 1380px; margin: 0 auto; }}
+        .container {{ max-width: 1400px; margin: 0 auto; }}
         
-        /* Header */
+        /* Institutional Header */
         header {{
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            background: linear-gradient(135deg, #001A38 0%, #1B365D 50%, #2A4D7E 100%);
             color: white;
             padding: 28px 36px;
             border-radius: 16px;
             margin-bottom: 20px;
-            box-shadow: 0 10px 25px -5px rgba(27, 54, 93, 0.25);
+            box-shadow: 0 10px 25px -5px rgba(0, 33, 71, 0.35);
+            border-bottom: 4px solid var(--accent);
         }}
-        .header-top {{ display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 12px; }}
-        .institution {{ font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.95; font-weight: 700; }}
-        .badge {{ background: rgba(255,255,255,0.2); padding: 4px 14px; border-radius: 9999px; font-size: 0.85rem; font-weight: 600; border: 1px solid rgba(255,255,255,0.3); }}
-        h1 {{ font-size: 2.1rem; font-weight: 800; margin-bottom: 6px; }}
-        .subtitle {{ font-size: 1.05rem; opacity: 0.9; max-width: 900px; margin-bottom: 16px; }}
-        .meta-bar {{ display: flex; gap: 24px; font-size: 0.9rem; opacity: 0.95; border-top: 1px solid rgba(255,255,255,0.25); padding-top: 12px; flex-wrap: wrap; }}
+        .header-top {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 14px; }}
+        .brand-container {{ display: flex; align-items: center; gap: 16px; }}
+        .crest-svg {{ width: 56px; height: 56px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }}
+        .institution-title {{ font-size: 1.15rem; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: #FFFFFF; }}
+        .institution-sub {{ font-size: 0.85rem; opacity: 0.85; font-weight: 600; letter-spacing: 0.5px; color: #E2E8F0; }}
+        .badge-academic {{ background: rgba(245, 158, 11, 0.25); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.5); padding: 5px 14px; border-radius: 9999px; font-size: 0.85rem; font-weight: 700; }}
+        
+        h1 {{ font-size: 2.1rem; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.5px; }}
+        .subtitle {{ font-size: 1.05rem; opacity: 0.9; max-width: 950px; margin-bottom: 16px; line-height: 1.4; }}
+        .meta-bar {{ display: flex; gap: 24px; font-size: 0.9rem; opacity: 0.95; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 12px; flex-wrap: wrap; }}
 
         /* Navigation Tabs */
         .tabs {{
@@ -79,10 +86,10 @@ def build_interactive_dashboard():
         }}
         .tab-btn {{
             flex: 1;
-            padding: 12px 18px;
+            padding: 12px 16px;
             border: none;
             background: transparent;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-weight: 700;
             color: var(--text-muted);
             border-radius: 8px;
@@ -145,7 +152,7 @@ def build_interactive_dashboard():
         }}
         .card-title {{ font-size: 1.25rem; font-weight: 700; color: var(--primary); }}
 
-        /* Table */
+        /* Tables */
         table {{ width: 100%; border-collapse: collapse; font-size: 0.9rem; }}
         th {{ background: #F1F5F9; color: var(--primary); text-align: left; padding: 12px 14px; font-weight: 700; border-bottom: 2px solid var(--border); }}
         td {{ padding: 12px 14px; border-bottom: 1px solid var(--border); }}
@@ -187,7 +194,7 @@ def build_interactive_dashboard():
             transition: all 0.2s ease;
         }}
         .btn-primary {{ background: var(--primary); color: white; }}
-        .btn-primary:hover {{ background: var(--primary-light); }}
+        .btn-primary:hover {{ background: var(--secondary); }}
         .btn-success {{ background: var(--success); color: white; }}
         .btn-success:hover {{ opacity: 0.9; }}
         .btn-secondary {{ background: white; color: var(--primary); border: 1px solid var(--border); }}
@@ -238,7 +245,6 @@ def build_interactive_dashboard():
         .tier-desc {{ flex: 1; font-size: 0.9rem; color: var(--text-muted); }}
         .tier-stats {{ font-weight: 800; font-size: 1rem; text-align: right; min-width: 160px; }}
 
-        /* Search input */
         .search-bar {{
             padding: 10px 16px;
             border: 1px solid var(--border);
@@ -253,26 +259,39 @@ def build_interactive_dashboard():
 <div class="container">
     <header>
         <div class="header-top">
-            <div class="institution">Bennett University • School of Computer Science Engineering & Technology</div>
-            <div class="badge">Verification & Assessment Mode</div>
+            <div class="brand-container">
+                <!-- Bennett University Official Crest SVG -->
+                <svg class="crest-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" rx="18" fill="#001833"/>
+                    <path d="M50 12 L82 30 L82 64 C82 78 50 90 50 90 C50 90 18 78 18 64 L18 30 Z" fill="#002147" stroke="#F59E0B" stroke-width="3"/>
+                    <path d="M50 25 L50 75 M30 46 L70 46 M32 62 L68 62" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+                    <circle cx="50" cy="25" r="4.5" fill="#D97706"/>
+                    <path d="M42 35 L50 28 L58 35" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div>
+                    <div class="institution-title">BENNETT UNIVERSITY — THE TIMES GROUP</div>
+                    <div class="institution-sub">SCHOOL OF COMPUTER SCIENCE ENGINEERING & TECHNOLOGY</div>
+                </div>
+            </div>
+            <div class="badge-academic">CSET371 Big Data Analytics & BI Final Capstone</div>
         </div>
         <h1>CreditTransAct: Financial Fraud Analytics Platform</h1>
         <div class="subtitle">Distributed Big Data Pipeline and Machine Learning Intelligence built on Apache Spark 3.5.4, Hadoop 3.3.5, and Spark MLlib across 15,000,000 credit card transaction events.</div>
         <div class="meta-bar">
-            <div><strong>Faculty Guide:</strong> Dr. Aditya Bharadwaj</div>
-            <div><strong>Course:</strong> CSET371 Big Data Analytics & Business Intelligence</div>
+            <div><strong>Faculty Guide:</strong> Dr. Aditya Bhardwaj</div>
             <div><strong>Team:</strong> Srikashyap Amaravadi, Gitesh Goyal, Annya Sharma, Ajitej Singh</div>
-            <div><strong>Pipeline Status:</strong> All Stages Verified (Exit Code 0)</div>
+            <div><strong>Audit Status:</strong> All Stages Verified (Exit Code 0)</div>
         </div>
     </header>
 
     <!-- Navigation Tabs -->
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('overview')">1. Executive Overview & Audit</button>
-        <button class="tab-btn" onclick="switchTab('simulator')">2. Live Fraud Simulator</button>
-        <button class="tab-btn" onclick="switchTab('benchmark')">3. ML Models & Confusion Matrices</button>
-        <button class="tab-btn" onclick="switchTab('explorer')">4. Scored Data Lake Explorer</button>
-        <button class="tab-btn" onclick="switchTab('triage')">5. Operational Triage & Power BI</button>
+        <button class="tab-btn" onclick="switchTab('methodology')">2. Proposed Methodology Diagrams</button>
+        <button class="tab-btn" onclick="switchTab('simulator')">3. Live Fraud Simulator</button>
+        <button class="tab-btn" onclick="switchTab('benchmark')">4. ML Benchmark & Confusion Matrices</button>
+        <button class="tab-btn" onclick="switchTab('explorer')">5. Scored Data Lake Explorer</button>
+        <button class="tab-btn" onclick="switchTab('triage')">6. Operational Triage & Power BI</button>
     </div>
 
     <!-- TAB 1: EXECUTIVE OVERVIEW -->
@@ -303,6 +322,49 @@ def build_interactive_dashboard():
                 <div class="kpi-value">97.59%</div>
                 <div class="kpi-sub">14,163 Frauds Halted at Tier 1</div>
             </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Project Team Specialization & Candidate Work Allocation</div>
+                <span class="badge" style="background:#002147; color:white;">Faculty Directive Alignment</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Candidate Name</th>
+                        <th>Roll Number</th>
+                        <th>Assigned Domain & Specific Deliverables</th>
+                        <th>Key Artifacts</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Srikashyap Amaravadi</strong></td>
+                        <td><code>S24CSEU1423</code></td>
+                        <td>Architecture Design, PySpark Session Optimization, Linear SVM & Random Forest Engineering, Localhost Server</td>
+                        <td><code>pipeline/common.py</code>, <code>server.py</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gitesh Goyal</strong></td>
+                        <td><code>S24CSEU0774</code></td>
+                        <td>Deep/ML Model Validation (GBT, Logistic Regression, Decision Tree), Hyperparameter Tuning, Schema Discovery</td>
+                        <td><code>pipeline/04_train_models.py</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Annya Sharma</strong></td>
+                        <td><code>S24CSEU1408</code></td>
+                        <td>End-to-End Data Preprocessing, Missing Value Checks, StringIndexer & OneHotEncoder Pipeline, Data Hygiene</td>
+                        <td><code>pipeline/02_transform.py</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ajitej Singh</strong></td>
+                        <td><code>S24CSEU1413</code></td>
+                        <td>Heuristic Risk Intelligence, 4-Tier Hybrid Triage Decision Matrix, Power BI Star Schema, Evaluation Synthesis</td>
+                        <td><code>pipeline/03_risk_analysis.py</code>, <code>06_hybrid_inference.py</code></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <div class="card">
@@ -384,17 +446,59 @@ def build_interactive_dashboard():
 
         <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
             <div>
-                <h3 style="color:var(--primary); margin-bottom:4px;">Official Reports Ready for Assessment</h3>
-                <p style="color:var(--text-muted); font-size:0.9rem;">Download the formal university-formatted Word document or view raw technical documentation:</p>
+                <h3 style="color:var(--primary); margin-bottom:4px;">Official Capstone Reports Ready for Faculty Review</h3>
+                <p style="color:var(--text-muted); font-size:0.9rem;">Download the formal institutional Word document with embedded methodology diagrams and performance heatmaps:</p>
             </div>
             <div style="display:flex; gap:12px;">
-                <a href="../docs/CreditTransAct_Fraud_Analytics_Final_Report.docx" class="btn btn-primary" download>Download Word Report (.docx)</a>
+                <a href="../docs/CreditTransAct_Fraud_Analytics_Final_Report.docx" class="btn btn-primary" download>Download Final Word Report (.docx)</a>
                 <a href="../docs/FINAL_PROJECT_REPORT.md" class="btn btn-secondary">View Markdown Report</a>
             </div>
         </div>
     </div>
 
-    <!-- TAB 2: LIVE SIMULATOR -->
+    <!-- TAB 2: PROPOSED METHODOLOGY DIAGRAMS -->
+    <div id="tab-methodology" class="tab-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Figure 1.1: End-to-End Proposed Methodology Architecture</div>
+                <span class="badge" style="background:#002147; color:white;">Chapter 1 & 2 Requirement</span>
+            </div>
+            <div style="text-align:center; padding:12px; background:#F8FAFC; border-radius:10px; border:1px solid var(--border);">
+                <img src="plots/methodology_architecture.png" alt="Methodology Architecture" style="max-width:100%; height:auto; border-radius:8px;">
+            </div>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-top:14px;">
+                <strong>Architecture Description:</strong> Illustrates the progression from 15,000,000 raw CSV records through distributed Snappy Parquet ingestion, data hygiene, feature engineering, heuristic risk intelligence, distributed ML model training (5 algorithms), and operational 4-tier triage clearance.
+            </p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Figure 3.1: Detailed Data Preprocessing & Feature Engineering Workflow</div>
+                <span class="badge" style="background:#059669; color:white;">Chapter 3 Requirement</span>
+            </div>
+            <div style="text-align:center; padding:12px; background:#F8FAFC; border-radius:10px; border:1px solid var(--border);">
+                <img src="plots/preprocessing_methodology.png" alt="Preprocessing Workflow" style="max-width:100%; height:auto; border-radius:8px;">
+            </div>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-top:14px;">
+                <strong>Step-by-Step Workflow:</strong> Documents: (1) Whitespace trimming and null safety; (2) Identifier isolation preventing data leakage; (3) StringIndexer frequency ranking and OneHotEncoder sparse representation; (4) VectorAssembler continuous-sparse feature integration.
+            </p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Figure 4.1: Distributed Model Training & Hyperparameter Tuning Specifications</div>
+                <span class="badge" style="background:#7C3AED; color:white;">Chapter 4 Requirement</span>
+            </div>
+            <div style="text-align:center; padding:12px; background:#F8FAFC; border-radius:10px; border:1px solid var(--border);">
+                <img src="plots/hyperparameter_tuning_flow.png" alt="Hyperparameter Tuning" style="max-width:100%; height:auto; border-radius:8px;">
+            </div>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-top:14px;">
+                <strong>Optimization Rationale:</strong> Details regularization parameter selection, tree depth ceilings, boosting shrinkage rates, and convergence criteria across all 5 evaluated algorithms.
+            </p>
+        </div>
+    </div>
+
+    <!-- TAB 3: LIVE SIMULATOR -->
     <div id="tab-simulator" class="tab-content">
         <div class="card">
             <div class="card-header">
@@ -402,7 +506,7 @@ def build_interactive_dashboard():
                 <span class="badge" style="background:#1B365D; color:white;">Real-Time Inference Testing</span>
             </div>
             <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">
-                Demonstrate the model and heuristic scoring engine live to the verification panel. Select a preset scenario or adjust attributes manually to simulate real-time scoring.
+                Demonstrate the model and heuristic scoring engine live to the faculty evaluation panel. Select a preset scenario or adjust attributes manually to simulate real-time scoring.
             </p>
 
             <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
@@ -490,7 +594,7 @@ def build_interactive_dashboard():
         </div>
     </div>
 
-    <!-- TAB 3: BENCHMARK & CHARTS -->
+    <!-- TAB 4: BENCHMARK & CHARTS -->
     <div id="tab-benchmark" class="tab-content">
         <div class="card">
             <div class="card-header">
@@ -579,7 +683,7 @@ def build_interactive_dashboard():
 
         <div class="card">
             <div class="card-header">
-                <div class="card-title">Performance Comparison Visualizations</div>
+                <div class="card-title">Performance Comparison Visualizations (Chapter 4 & 5 Requirement)</div>
             </div>
             <div class="chart-grid">
                 <div class="chart-box">
@@ -610,7 +714,7 @@ def build_interactive_dashboard():
         </div>
     </div>
 
-    <!-- TAB 4: DATA LAKE EXPLORER -->
+    <!-- TAB 5: DATA LAKE EXPLORER -->
     <div id="tab-explorer" class="tab-content">
         <div class="card">
             <div class="card-header">
@@ -645,7 +749,7 @@ def build_interactive_dashboard():
         </div>
     </div>
 
-    <!-- TAB 5: TRIAGE & POWER BI -->
+    <!-- TAB 6: TRIAGE & POWER BI -->
     <div id="tab-triage" class="tab-content">
         <div class="card">
             <div class="card-header">
@@ -871,7 +975,6 @@ def build_interactive_dashboard():
         }}
     }}
 
-    // Initial render
     renderTable();
 </script>
 </body>
@@ -879,7 +982,7 @@ def build_interactive_dashboard():
 """
     out_file = ROOT / 'results' / 'dashboard.html'
     out_file.write_text(html_content, encoding='utf-8')
-    print(f"Interactive verification interface generated: {out_file}")
+    print(f"[+] Upgraded dashboard successfully generated: {out_file}")
 
 if __name__ == '__main__':
     build_interactive_dashboard()
