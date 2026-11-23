@@ -53,7 +53,7 @@ Further, the plagiarism similarity index of the report from Turnitin is _____ %,
 | **Srikashyap Amaravadi** | **S24CSEU1423** | **Lead Big Data Engineer & Classifier Architect**: Architected the end-to-end distributed PySpark MLlib training and evaluation pipeline operating across 15,000,000 transactions and 34 attributes. Implemented, tuned, and optimized the Champion Linear Support Vector Machine (L-SVM) classifier (Precision: 0.9996, Recall: 0.9801, F1: 0.9898, ROC-AUC: 0.9980) and Random Forest model. Resolved distributed execution bottlenecks, engineered pipeline feature caching eliminating 80% runtime overhead, and designed the multi-threaded backend HTTP REST API server (`/api/predict`, `/api/metrics`, `/api/triage`) and real-time simulator backend. |
 | **Gitesh Goyal** | **S24CSEU0774** | **ML Optimization Engineer & Schema Discovery Lead**: Engineered distributed schema inspection engine in PySpark systematically profiling data types, null counts, cardholder cardinality, and moments across all 34 raw attributes (`results/schema_report.json`). Implemented and trained Gradient-Boosted Trees (GBT), Logistic Regression (elastic-net/L2), and Decision Trees in Spark MLlib. Designed the multi-stage Hyperparameter Grid Search methodology (depths, maxBins, step sizes, regularization parameters) and benchmarked model convergence and trade-offs. |
 | **Annya Sharma** | **S24CSEU1408** | **Data Hygiene & Feature Pipeline Engineering Lead**: Designed and implemented the high-throughput distributed ingestion system converting raw 5.01 GB CSV records into snappy-compressed, partitioned columnar Apache Parquet files (`results/raw/`), improving read throughput by 6.8x. Engineered rigorous data cleansing, deduplication, and schema validation routines, isolating non-predictive personal identifiers (`cc_num`, `trans_num`, names) for PCI-DSS compliance. Constructed Spark feature vectorization pipelines (`StringIndexer`, `OneHotEncoderEstimator`, `VectorAssembler`) and validated partition class distribution integrity. |
-| **Ajitej Singh** | **S24CSEU1413** | **Risk Intelligence, Evaluation Analytics & BI Lead**: Formulated the domain-driven rule-based heuristic risk scoring algorithm integrating baseline risk (10 pts), 90th percentile amounts (+30 pts), high-risk merchant categories (+20 pts), foreign transaction flags (+15 pts), and velocity metrics (+25 pts). Designed and implemented the 4-Tier Hybrid Triage Decision Matrix combining heuristic scores with ML probabilities (clearing 95.23% of transactions automatically and intercepting 99.96% of critical threats). Generated empirical evaluation plots (ROC, PR, confusion matrices) and built the Power BI dimensional Star Schema data mart. |
+| **Ajitej Singh** | **S24CSEU1413** | **Risk Intelligence, Evaluation Analytics & Visualization Lead**: Formulated the domain-driven rule-based heuristic risk scoring algorithm integrating baseline risk (10 pts), 90th percentile amounts (+30 pts), high-risk merchant categories (+20 pts), foreign transaction flags (+15 pts), and velocity metrics (+25 pts). Designed and implemented the 4-Tier Hybrid Triage Decision Matrix combining heuristic scores with ML probabilities (clearing 95.23% of transactions automatically and intercepting 99.96% of critical threats). Generated empirical evaluation plots (ROC, PR, confusion matrices) and integrated the interactive analytics visual components and operational triage queues into the verification dashboard. |
 
 ---
 
@@ -165,7 +165,7 @@ How can a horizontally scalable Big Data architecture ingest, sanitize, profile,
 2. Automate data cleansing, feature extraction, and PCI-DSS identifier isolation across 34 attributes.
 3. Benchmark five Spark MLlib classification models with hyperparameter tuning to identify a champion architecture.
 4. Implement a 4-tier hybrid operational triage engine balancing precision, recall, and consumer checkout friction.
-5. Provide a fullstack interactive verification interface and Power BI Star Schema data mart.
+5. Provide an interactive fullstack verification dashboard with real-time REST API simulator and telemetry.
 
 ### 1.10 Scope of the Project
 The scope covers end-to-end batch data engineering, distributed model training, rigorous holdout testing on 300,296 unseen records, operational risk simulation, and business intelligence reporting. Real-time streaming integration via Apache Kafka is defined in the production roadmap.
@@ -189,7 +189,7 @@ The architecture comprises five core architectural components:
 2. **Hygiene & Feature Engineering Tier**: Preprocessing, categorical encoding, and numerical vector assembly.
 3. **Distributed Algorithmic Engine**: PySpark MLlib parallel training and hyperparameter optimization.
 4. **Hybrid Decision Engine**: Layered heuristic scoring combined with model class probabilities.
-5. **Presentation Tier**: Localhost REST API verification dashboard and Power BI dimensional data mart.
+5. **Presentation Tier**: Localhost responsive web verification dashboard powered by a multi-threaded Python REST API backend.
 
 ### 2.3 Architecture Components and Their Functions
 - **Spark Driver & Worker Executors**: Manage cluster execution graphs, task distribution, and memory caching.
@@ -238,7 +238,7 @@ The implementation follows a 7-stage engineering lifecycle:
 - **Scripting & Analytics**: Python 3.11, NumPy, Pandas, Matplotlib, Seaborn.
 - **Storage Subsystem**: Apache Parquet with Snappy compression.
 - **Serving Layer**: Python HTTP multi-threaded REST server, HTML5, CSS3, JavaScript.
-- **Business Intelligence**: Microsoft Power BI with Star Schema dimensional modeling.
+- **Front-End & API**: HTML5, CSS3 responsive grid/flexbox, JavaScript (Fetch API), and multi-threaded Python HTTP server.
 
 ### 2.10 Experimental Setup and Configuration
 - **Hardware**: High-performance multi-core workstation, 16 GB physical RAM, NVMe SSD.
@@ -284,7 +284,7 @@ To circumvent the major overhead of re-transforming 12 million records repeatedl
 - **Raw Parquet**: `results/raw/` (snappy columnar format).
 - **Cleaned Data**: `results/cleaned/`.
 - **Risk-Scored Parquet**: `results/risk_scored/`.
-- **Power BI Data Mart**: `powerbi/data/` containing `Dim_Customer.csv`, `Dim_Merchant.csv`, `Dim_Location.csv`, `Dim_RiskCategory.csv`, and `Fact_Transactions.csv`.
+- **Structured Metric Artifacts**: `results/model_metrics.csv` and `results/hybrid_triage_summary.csv` providing machine-readable feeds consumed directly by the web verification dashboard.
 
 ### 3.7 Integration of System Modules
 The modular components communicate through standardized file contracts. Training metrics are output to `results/model_metrics.csv` and triage distributions to `results/hybrid_triage_summary.csv`. The web server (`server.py`) ingests these outputs to power the frontend interface.
@@ -367,7 +367,7 @@ All five project objectives were met in full:
 2. Automated data hygiene and PCI-DSS identifier isolation implemented.
 3. 5 machine learning models trained, tuned, and benchmarked.
 4. 4-tier hybrid operational triage engine validated on 300,296 records.
-5. Interactive verification interface and Power BI Star Schema delivered.
+5. Interactive fullstack web verification dashboard and REST API simulator delivered.
 
 ### 5.4 Project Limitations
 - Evaluated on a high-spec single-node workstation rather than an elastic multi-node cloud cluster.

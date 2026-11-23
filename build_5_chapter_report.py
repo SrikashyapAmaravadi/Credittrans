@@ -246,7 +246,7 @@ def build_report():
         ("Annya Sharma", "S24CSEU1408", 
          "Data Hygiene & Feature Pipeline Engineering Lead: Engineered high-throughput distributed ingestion from raw 5.01 GB CSV into partitioned snappy Parquet. Implemented robust data cleansing, deduplication, null-handling, and isolation of cardholder identifiers (cc_num, trans_num) for PCI-DSS compliance. Constructed Spark feature vectorization pipelines (StringIndexer, OneHotEncoder, VectorAssembler)."),
         ("Ajitej Singh", "S24CSEU1413", 
-         "Risk Intelligence, Evaluation Analytics & BI Lead: Formulated domain-driven heuristic risk scoring algorithm (amount thresholds, merchant risk, velocity). Engineered the 4-Tier Hybrid Triage Decision Matrix routing 95.23% to automated clearance and intercepting 99.96% frauds. Generated empirical evaluation plots (ROC, PR, confusion matrices) and built Power BI dimensional Star Schema data mart.")
+         "Risk Intelligence, Evaluation Analytics & Visualization Lead: Formulated domain-driven heuristic risk scoring algorithm (amount thresholds, merchant risk, velocity). Engineered the 4-Tier Hybrid Triage Decision Matrix routing 95.23% to automated clearance and intercepting 99.96% frauds. Generated empirical evaluation plots (ROC, PR, confusion matrices) and integrated the interactive analytics visual components and operational triage queues into the verification dashboard.")
     ]
     for r_idx, (name, enr, contrib) in enumerate(collab_data):
         row = collab_table.rows[r_idx]
@@ -363,7 +363,7 @@ References .....................................................................
     add_para(doc, "How can a scalable, distributed Big Data architecture ingest, sanitize, profile, and classify credit card transaction streams at the scale of 15,000,000 records (~5.01 GB) to achieve near-zero false-positive rates (Precision > 99.9%) and high recall (Recall > 98%), while orchestrating a deterministic multi-tier triage mechanism that minimizes manual investigation queues and preserves frictionless customer checkout experiences?")
 
     add_header(doc, "1.8 Proposed Solution Overview", level=2)
-    add_para(doc, "To resolve this challenge, this project presents CreditTransAct: an end-to-end, industrial-grade Big Data fraud analytics platform engineered on Apache Spark MLlib, Python, and modern business intelligence infrastructure. CreditTransAct integrates high-throughput Parquet ingestion, automated data hygiene pipelines, domain-specific heuristic risk intelligence, five machine learning classification algorithms, an automated 4-tier hybrid triage engine, a live interactive verification interface, and an enterprise Power BI Star Schema data mart.")
+    add_para(doc, "To resolve this challenge, this project presents CreditTransAct: an end-to-end, industrial-grade Big Data fraud analytics platform engineered on Apache Spark MLlib, Python, and a custom web analytics verification interface. CreditTransAct integrates high-throughput Parquet ingestion, automated data hygiene pipelines, domain-specific heuristic risk intelligence, five machine learning classification algorithms, an automated 4-tier hybrid triage engine, and a live interactive web-based verification platform.")
 
     # Methodology Diagram in Chapter 1
     add_image_if_exists(doc, PLOTS_DIR / "methodology_architecture.png", "CreditTransAct End-to-End System & Methodology Architecture", width=Inches(6.0))
@@ -373,7 +373,7 @@ References .....................................................................
     add_bullet(doc, "Data Hygiene & Privacy: Automate sanitization, deduplication, null-handling, and isolation of cardholder identifiers for PCI-DSS compliance.", "Objective 2: ")
     add_bullet(doc, "Comparative Model Benchmark: Formulate, train, and validate five machine learning algorithms in Spark MLlib (Linear SVM, Random Forest, Logistic Regression, Gradient-Boosted Trees, Decision Trees).", "Objective 3: ")
     add_bullet(doc, "Hybrid Triage Engine: Implement a 4-tier decision matrix combining domain heuristic risk scores with machine learning probabilities.", "Objective 4: ")
-    add_bullet(doc, "Fullstack Verification Platform: Deliver an interactive web dashboard with REST API endpoints and an enterprise Power BI dimensional data mart.", "Objective 5: ")
+    add_bullet(doc, "Fullstack Verification Platform: Deliver an interactive web dashboard with REST API endpoints, real-time simulator, and KPI telemetry.", "Objective 5: ")
 
     add_header(doc, "1.10 Scope of the Project", level=2)
     add_para(doc, "The scope encompasses data engineering, distributed algorithmic training, evaluation on 300,296 unseen test records, operational risk triage simulation, and web-based business intelligence visualization. Real-time streaming integration via Apache Kafka is formally architected and detailed as part of the future production roadmap.")
@@ -392,7 +392,7 @@ References .....................................................................
     add_para(doc, "CreditTransAct is designed around a multi-tier, decoupled pipeline architecture. The design decouples data ingestion, transformation, feature assembly, distributed modeling, and operational decisioning to ensure horizontal scalability, zero data leakage, and sub-second inference responsiveness.")
 
     add_header(doc, "2.2 Proposed System Architecture", level=2)
-    add_para(doc, "The architecture comprises five interconnected tiers: (1) Ingestion Tier (CSV to snappy Parquet conversion), (2) Hygiene & Feature Engineering Tier (StringIndexer, OneHotEncoder, VectorAssembler), (3) Algorithmic Training Tier (Spark MLlib distributed classifiers), (4) Hybrid Inference & Triage Tier (4-tier operational routing), and (5) Presentation Tier (Interactive web verification dashboard and Power BI dimensional data mart).")
+    add_para(doc, "The architecture comprises five interconnected tiers: (1) Ingestion Tier (CSV to snappy Parquet conversion), (2) Hygiene & Feature Engineering Tier (StringIndexer, OneHotEncoder, VectorAssembler), (3) Algorithmic Training Tier (Spark MLlib distributed classifiers), (4) Hybrid Inference & Triage Tier (4-tier operational routing), and (5) Presentation Tier (Interactive web verification dashboard and REST analytics server).")
 
     add_header(doc, "2.3 Architecture Components and Their Functions", level=2)
     add_bullet(doc, "Apache Spark Driver & Executors: Coordinates distributed query planning, task scheduling, and in-memory Resilient Distributed Dataset caching.", "Distributed Engine: ")
@@ -428,7 +428,7 @@ References .....................................................................
     add_bullet(doc, "Python 3.11+, NumPy, Pandas, Matplotlib, Seaborn for evaluation and plotting.", "Analytics & Scripting: ")
     add_bullet(doc, "Apache Parquet with Snappy compression for high-performance columnar persistence.", "Storage Format: ")
     add_bullet(doc, "HTML5, CSS3, JavaScript (Fetch API) for the responsive verification dashboard.", "Web Front-End: ")
-    add_bullet(doc, "Microsoft Power BI for dimensional data modeling, DAX measures, and Star Schema reporting.", "Business Intelligence: ")
+    add_bullet(doc, "HTML5, CSS3, JavaScript (Fetch API) and custom Python HTTP REST server for the responsive verification dashboard.", "Interactive Front-End & API: ")
 
     add_header(doc, "2.10 Experimental Setup and Configuration", level=2)
     add_para(doc, "Experiments were conducted on a high-performance Windows workstation featuring an AMD Ryzen 7 / Intel Core i7 processor, 16 GB physical RAM, and high-speed NVMe SSD storage. Spark Session configuration parameters were tuned: spark.driver.memory = 8g, spark.driver.maxResultSize = 4g, spark.sql.shuffle.partitions = 64, and spark.master = local[*].")
@@ -465,7 +465,7 @@ References .....................................................................
     add_para(doc, "To maximize efficiency across 15,000,000 rows, the feature engineering pipeline was fitted once on the training partition. The resulting feature vectors were transformed and explicitly cached into memory (.cache().count()) as train_vec and test_vec. Each classifier was then trained directly against the pre-assembled feature vectors, preventing repetitive indexing overheads.")
 
     add_header(doc, "3.6 Database or Storage Implementation", level=2)
-    add_para(doc, "Storage is organized into three analytical tiers: Raw Parquet (results/raw/), Cleaned Parquet (results/cleaned/), and Risk-Scored Parquet (results/risk_scored/). For BI analysis, export_for_powerbi.py generates a Star Schema data mart comprising Dim_Customer.csv, Dim_Merchant.csv, Dim_Location.csv, Dim_RiskCategory.csv, and Fact_Transactions.csv in powerbi/data/.")
+    add_para(doc, "Storage is organized into three analytical tiers: Raw Parquet (results/raw/), Cleaned Parquet (results/cleaned/), and Risk-Scored Parquet (results/risk_scored/). Pipeline evaluation metrics and operational action distributions are exported as structured JSON and CSV artifacts (results/model_metrics.csv, results/hybrid_triage_summary.csv) directly consumed by the interactive verification dashboard.")
 
     add_header(doc, "3.7 Integration of System Modules", level=2)
     add_para(doc, "System modules are interconnected through consistent filesystem contracts. Each stage writes partition metadata and schema verification manifests. The web server (server.py) loads model metrics (results/model_metrics.csv) and triage summaries directly, serving both dynamic JSON API responses and static web assets.")
@@ -546,7 +546,7 @@ References .....................................................................
     add_header(doc, "Chapter 5: Project Conclusion and Presentation", level=1)
     
     add_header(doc, "5.1 Project Summary", level=2)
-    add_para(doc, "CreditTransAct successfully demonstrates an enterprise-grade Big Data fraud detection and triage solution. Operating on 15,000,000 transactions and 34 attributes, the project integrates distributed Parquet ingestion, automated hygiene pipelines, domain heuristic risk intelligence, five Spark MLlib classification models, an automated 4-tier hybrid decision engine, an interactive web verification interface, and a Power BI Star Schema data mart.")
+    add_para(doc, "CreditTransAct successfully demonstrates an enterprise-grade Big Data fraud detection and triage solution. Operating on 15,000,000 transactions and 34 attributes, the project integrates distributed Parquet ingestion, automated hygiene pipelines, domain heuristic risk intelligence, five Spark MLlib classification models, an automated 4-tier hybrid decision engine, and an interactive fullstack web verification dashboard.")
 
     add_header(doc, "5.2 Conclusion", level=2)
     add_para(doc, "The project concludes that distributed Big Data architectures can achieve near-flawless fraud interception (Linear SVM Precision 0.9996, Recall 0.9801, F1 0.9898) while simultaneously preserving frictionless payment experiences. Layering heuristic risk scoring with machine learning probabilities provides a practical, production-ready operational architecture.")
