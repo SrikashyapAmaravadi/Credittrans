@@ -4,9 +4,9 @@ import docx
 from docx import Document
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
-from docx.oxml import OxmlElement, parse_xml
-from docx.oxml.ns import nsdecls, qn
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.oxml import parse_xml
+from docx.oxml.ns import nsdecls
 
 ROOT = Path(__file__).resolve().parent
 PLOTS_DIR = ROOT / 'results' / 'plots'
@@ -57,7 +57,7 @@ def style_table(table, col_widths=None, header_bg="1B365D", alt_bg="F4F6F9"):
 def build_docx(output_path):
     doc = Document()
     
-    # Page setup
+    # Page setup - 1 inch margins
     for section in doc.sections:
         section.top_margin = Inches(1)
         section.bottom_margin = Inches(1)
@@ -78,23 +78,23 @@ def build_docx(output_path):
     def add_title(text):
         p = doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p.paragraph_format.space_before = Pt(30)
-        p.paragraph_format.space_after = Pt(12)
+        p.paragraph_format.space_before = Pt(20)
+        p.paragraph_format.space_after = Pt(10)
         run = p.add_run(text)
         run.font.name = "Calibri"
-        run.font.size = Pt(22)
+        run.font.size = Pt(20)
         run.font.bold = True
         run.font.color.rgb = NAVY
         return p
 
     def add_heading_1(text):
         p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(18)
+        p.paragraph_format.space_before = Pt(16)
         p.paragraph_format.space_after = Pt(6)
         p.paragraph_format.keep_with_next = True
         run = p.add_run(text)
         run.font.name = "Calibri"
-        run.font.size = Pt(15)
+        run.font.size = Pt(14)
         run.font.bold = True
         run.font.color.rgb = NAVY
         return p
@@ -106,7 +106,7 @@ def build_docx(output_path):
         p.paragraph_format.keep_with_next = True
         run = p.add_run(text)
         run.font.name = "Calibri"
-        run.font.size = Pt(12.5)
+        run.font.size = Pt(12)
         run.font.bold = True
         run.font.color.rgb = SLATE
         return p
@@ -178,23 +178,22 @@ def build_docx(output_path):
                 r.font.color.rgb = SLATE
 
     # ==========================
-    # TITLE PAGE
+    # COVER PAGE
     # ==========================
     logo_path = ROOT / 'results' / 'bennett_logo.png'
     if logo_path.exists():
         p_logo = doc.add_paragraph()
         p_logo.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_logo.paragraph_format.space_before = Pt(10)
-        p_logo.paragraph_format.space_after = Pt(12)
-        doc.add_picture(str(logo_path), width=Inches(1.8))
-        # Center the picture
+        p_logo.paragraph_format.space_before = Pt(8)
+        p_logo.paragraph_format.space_after = Pt(8)
+        doc.add_picture(str(logo_path), width=Inches(1.6))
         doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     p_inst = doc.add_paragraph()
     p_inst.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r_inst = p_inst.add_run("BENNETT UNIVERSITY\n")
     r_inst.font.name = "Calibri"
-    r_inst.font.size = Pt(18)
+    r_inst.font.size = Pt(17)
     r_inst.font.bold = True
     r_inst.font.color.rgb = NAVY
 
@@ -206,9 +205,9 @@ def build_docx(output_path):
 
     p_badge = doc.add_paragraph()
     p_badge.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r_badge = p_badge.add_run("COMPREHENSIVE PROJECT REPORT — MILESTONE 3 & FINAL ASSESSMENT\n\n")
+    r_badge = p_badge.add_run("PROJECT IMPLEMENTATION FINAL REPORT — MILESTONE 3 & FINAL ASSESSMENT\n\n")
     r_badge.font.name = "Calibri"
-    r_badge.font.size = Pt(13)
+    r_badge.font.size = Pt(12)
     r_badge.font.bold = True
     r_badge.font.color.rgb = RGBColor(197, 48, 48)
 
@@ -216,129 +215,287 @@ def build_docx(output_path):
 
     p_course = doc.add_paragraph()
     p_course.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p_course.paragraph_format.space_after = Pt(20)
-    r_course = p_course.add_run("Course: CSET371 — Big Data Analytics and Business Intelligence\nAcademic Year: 2026\nProject Faculty Guide: Dr. Aditya Bhardwaj")
+    p_course.paragraph_format.space_after = Pt(16)
+    r_course = p_course.add_run("Course Code: CSET371 — Big Data Analytics and Business Intelligence\nAcademic Year: 2026\nProject Guide: Dr. Aditya Bhardwaj")
     r_course.font.name = "Calibri"
     r_course.font.size = Pt(11)
     r_course.font.italic = True
     r_course.font.color.rgb = SLATE
 
-    # Student table with role specialization as per guide instructions
-    team_data = [
-        ("Candidate Name", "Roll Number", "Specialized Responsibilities & Deliverables"),
-        ("Srikashyap Amaravadi", "S24CSEU1423", "Architecture Design, Spark Session Tuning, Linear SVM/RF Implementation, Web Server"),
-        ("Gitesh Goyal", "S24CSEU0774", "Deep/ML Model Implementation (GBT, LR, DT), Hyperparameter Optimization & Model Validation"),
-        ("Annya Sharma", "S24CSEU1408", "Data Profiling, Missing Value Analysis, Preprocessing Pipeline, StringIndexer/OHE Design"),
-        ("Ajitej Singh", "S24CSEU1413", "Heuristic Risk Engine, Operational 4-Tier Hybrid Triage Engine, Power BI Modeling & Report")
+    # Submitter box
+    sub_table = doc.add_table(rows=6, cols=2)
+    sub_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    submit_data = [
+        ("Submitted by:", ""),
+        ("• Srikashyap Amaravadi", "S24CSEU1423 (Lead Big Data Engineer & Classifier Architect)"),
+        ("• Gitesh Goyal", "S24CSEU0774 (ML Optimization Engineer & Schema Discovery Lead)"),
+        ("• Annya Sharma", "S24CSEU1408 (Data Hygiene & Feature Pipeline Engineering Lead)"),
+        ("• Ajitej Singh", "S24CSEU1413 (Risk Intelligence, Evaluation Analytics & BI Lead)"),
+        ("Project Faculty Guide:", "Dr. Aditya Bhardwaj")
     ]
-    t_team = doc.add_table(rows=len(team_data), cols=3)
-    for r_idx, row in enumerate(team_data):
-        for c_idx, val in enumerate(row):
-            t_team.rows[r_idx].cells[c_idx].paragraphs[0].text = val
-    style_table(t_team, col_widths=[1.8, 1.3, 3.4])
+    for row_idx, (col0, col1) in enumerate(submit_data):
+        row = sub_table.rows[row_idx]
+        p0 = row.cells[0].paragraphs[0]
+        p1 = row.cells[1].paragraphs[0]
+        r0 = p0.add_run(col0)
+        r1 = p1.add_run(col1)
+        r0.font.name = "Calibri"
+        r1.font.name = "Calibri"
+        r0.font.size = Pt(10)
+        r1.font.size = Pt(10)
+        if row_idx in (0, 5):
+            r0.font.bold = True
+            r1.font.bold = True
+            r0.font.color.rgb = NAVY
+            r1.font.color.rgb = NAVY
+        else:
+            r0.font.color.rgb = DARK
+            r1.font.color.rgb = DARK
+        set_cell_margins(row.cells[0], top=50, bottom=50, left=80, right=80)
+        set_cell_margins(row.cells[1], top=50, bottom=50, left=80, right=80)
 
     doc.add_page_break()
 
     # ==========================
-    # DECLARATION & PLAGIARISM
+    # DECLARATION
     # ==========================
     add_heading_1("DECLARATION OF ORIGINALITY AND PLAGIARISM COMPLIANCE")
     add_body(
-        "We hereby declare that this project report entitled 'Scalable Financial Fraud Detection and Risk Intelligence Using Apache Spark, "
-        "Hadoop and Machine Learning' is an authentic record of our own research and engineering work undertaken under the supervision of "
+        "We hereby declare that this final project report titled 'Scalable Financial Fraud Detection and Risk Intelligence Using Apache Spark, "
+        "Hadoop and Machine Learning' is an authentic record of our own research and software engineering executed under the supervision of "
         "Dr. Aditya Bhardwaj, School of Computer Science Engineering and Technology, Bennett University."
     )
     add_body(
-        "All data pipelines, transformation algorithms, machine learning models, and hybrid operational triage engines presented herein were "
-        "executed and evaluated directly on our execution environment. No generative-AI illustrations or synthetic performance metrics have "
-        "been fabricated; all diagrams and heatmaps reflect verified empirical measurements. Plagiarism policies of the University and ethical standards "
-        "have been rigorously maintained."
+        "All data pipelines, distributed transformations, estimators, heuristic risk scoring rules, and analytical visualizations were executed and "
+        "benchmarked on our active distributed execution environment. Where benchmark datasets or third-party frameworks have been utilized, they have been "
+        "comprehensively cited adhering to University academic integrity and plagiarism guidelines. No synthetic AI-generated illustrations were used; "
+        "all figures represent deterministic mathematical diagrams and measured empirical results."
     )
 
     # ==========================
-    # EXECUTIVE SUMMARY
+    # ABSTRACT
     # ==========================
-    add_heading_1("EXECUTIVE SUMMARY")
+    add_heading_1("ABSTRACT")
     add_body(
-        "Digital payment infrastructures process astronomical transaction volumes under severe class imbalance (~4.90% fraud). Single-machine workflows "
-        "suffer memory bottlenecks when processing multi-gigabyte datasets. This project delivers an end-to-end distributed Big Data and Machine Learning "
-        "architecture built with Apache Spark 3.5.4, Apache Hadoop 3.3.5, and Python 3.11, empirically validated on the 5.01 GB CreditTransAct dataset (15,000,000 transactions)."
+        "Digital financial networks process millions of payment events per hour under extreme class imbalance (~4.90% fraud). Single-machine workflows "
+        "suffer memory exhaustion and computational latency when processing multi-gigabyte transaction streams. This report documents the complete implementation "
+        "of the CreditTransAct Financial Fraud Analytics Platform built on Apache Spark 3.5.4, Apache Hadoop 3.3.5, and Python 3.11, validated on the 5.01 GB "
+        "CreditTransAct benchmark dataset (15,000,000 transaction records across 34 feature attributes)."
     )
     add_callout(
-        "Empirical Highlight: Linear SVM and Random Forest achieved peak performance with an F1-Score of 0.9898 and Precision of 99.97% on unseen test data, "
-        "while the hybrid triage engine achieved automated clearance for 95.23% of transactions and blocked 97.59% of fraudulent attempts instantly.",
+        "Core Empirical Achievement: Linear SVM achieved an F1-Score of 0.9898 and Recall of 98.01% on an unseen holdout partition of 300,296 records. "
+        "Random Forest achieved 99.97% Precision with only 4 false alarms across 285k legitimate transactions. The 4-tier hybrid triage engine clears 95.23% "
+        "of normal traffic automatically while halting 97.59% of fraudulent attempts instantly.",
         title="EMPIRICAL HIGHLIGHT"
     )
 
     # ==========================
-    # CHAPTER 1: INTRODUCTION & PROPOSED METHODOLOGY
+    # TABLE OF CONTENTS
     # ==========================
-    add_heading_1("CHAPTER 1: INTRODUCTION AND PROPOSED METHODOLOGY")
+    add_heading_1("TABLE OF CONTENTS")
+    toc_items = [
+        "1. Introduction & Proposed Methodology",
+        "2. Problem Statement and Architectural Objectives",
+        "3. Dataset Description and Verified 34-Attribute Catalog",
+        "4. System Requirements and Distributed Architecture",
+        "5. Development Environment and Verified Tech Stack",
+        "6. Data Ingestion and Distributed Storage Pipeline",
+        "7. Data Understanding and Quality Assessment",
+        "8. Data Preprocessing and Feature Engineering Methodology",
+        "9. Distributed Machine Learning Algorithms & Mathematical Formulation",
+        "10. Hyperparameter Tuning and Optimization Framework",
+        "11. Model Training, Validation Strategy & Leakage Prevention",
+        "12. Comprehensive Evaluation Metrics, ROC-AUC & Confusion Matrices",
+        "13. Explainable Risk Scoring Intelligence and Reason Codes",
+        "14. Operational 4-Tier Hybrid Fraud Triage Engine",
+        "15. Business Intelligence and Power BI Enterprise Integration",
+        "16. Testing, Limitations, Plagiarism & Ethical Compliance",
+        "17. Team Contributions and Technical Work Breakdown",
+        "18. Conclusion and Future Roadmap",
+        "19. References"
+    ]
+    for item in toc_items:
+        add_body(item)
+
+    doc.add_page_break()
+
+    # ==========================
+    # 1. INTRODUCTION & PROPOSED METHODOLOGY
+    # ==========================
+    add_heading_1("1. INTRODUCTION & PROPOSED METHODOLOGY")
     add_body(
-        "Modern payment networks require real-time fraud defense that combines high recall (catching subtle fraud attempts) with exceptional precision "
-        "(preventing false declines on legitimate cardholders). Our proposed methodology addresses this using a distributed multi-stage architecture."
+        "Electronic payment networks require fraud defense systems that combine high recall with minimal false positives. "
+        "Our proposed architecture decouples raw ingestion, columnar Parquet caching, hygiene, heuristic scoring, feature vectorization, "
+        "distributed classifier training, and multi-tier triage into distinct layers."
     )
     add_heading_2("1.1 Proposed Methodology Architecture Diagram")
-    add_body("Figure 1.1 illustrates the end-to-end distributed Big Data and Machine Learning pipeline architecture:")
     add_image_safe(PLOTS_DIR / 'methodology_architecture.png', "Figure 1.1: Proposed Scalable Financial Fraud Analytics Methodology Architecture", width=Inches(6.2))
 
     # ==========================
-    # CHAPTER 2: THEORETICAL FOUNDATION & BIG DATA FRAMEWORK
+    # 2. PROBLEM STATEMENT & OBJECTIVES
     # ==========================
-    add_heading_1("CHAPTER 2: THEORETICAL FOUNDATION AND BIG DATA DISTRIBUTED FRAMEWORK")
+    add_heading_1("2. PROBLEM STATEMENT AND ARCHITECTURAL OBJECTIVES")
     add_body(
-        "Apache Spark provides a distributed memory-centric computing paradigm. Using Spark SQL DataFrames and the Catalyst query optimizer, "
-        "transformations are converted into optimized execution graphs executed across 16 logical cores. Raw 5.01 GB CSV was transformed into Snappy-compressed "
-        "columnar Apache Parquet partitions (results/raw), reducing storage footprint by 85% and eliminating repeated schema inference."
+        "Financial institutions require scalable automated systems capable of ingesting high-velocity streams, assessing quality, isolating risk indicators, "
+        "and prioritizing suspicious activity for human investigators without prohibitive latencies or high false-alarm rates."
+    )
+    add_bullet(" Distributed Scalability: Eliminate I/O bottlenecks by converting raw CSV to Snappy Parquet partitions.", "1.")
+    add_bullet(" Data Hygiene & Leakage Isolation: Eliminate identifiers (customer_id, transaction_id) while preserving 31 predictive features.", "2.")
+    add_bullet(" Transparent Heuristic Risk Scoring: Compute empirical 90th percentile amounts and rare merchant volume shares.", "3.")
+    add_bullet(" Distributed ML Classification: Train and evaluate 5 candidate Spark MLlib models on 1.5 million transactions.", "4.")
+    add_bullet(" Operational 4-Tier Hybrid Triage: Establish an actionable operational triage engine combining ML probabilities with heuristic rules.", "5.")
+    add_bullet(" Business Intelligence Integration: Provide pre-modeled Star Schema datasets for Power BI dashboards.", "6.")
+
+    # ==========================
+    # 3. DATASET DESCRIPTION & ATTRIBUTE CATALOG
+    # ==========================
+    add_heading_1("3. DATASET DESCRIPTION AND VERIFIED 34-ATTRIBUTE CATALOG")
+    add_body(
+        "The project utilizes the CreditTransAct benchmark dataset (Mendeley Data, DOI: 10.17632/y64bbnm2s3.1), comprising 15,000,000 records (~5.01 GB CSV) "
+        "with 34 feature attributes. Class distribution: 14,264,776 Legitimate (95.10%), 735,224 Fraudulent (4.90%)."
+    )
+
+    # Full 34-column attribute catalog
+    schema_data = [
+        ("#", "Attribute Name", "Inferred Type", "Category", "Semantic Description"),
+        ("1", "transaction_amount", "Double", "Numeric", "Monetary currency value of transaction"),
+        ("2", "transaction_amount_bin", "String", "Categorical", "Discretized spending tier (low, medium, high)"),
+        ("3", "avg_amount_deviation_sigma", "Double", "Numeric", "Std deviations from historical customer average"),
+        ("4", "merchant_category", "String", "Categorical", "Commercial category (grocery, electronics, travel)"),
+        ("5", "merchant_risk_score", "String", "Categorical", "Historical merchant risk profile (low, high)"),
+        ("6", "merchant_category_vs_history", "String", "Categorical", "Category alignment with customer spending history"),
+        ("7", "geo_velocity_kmh", "Double", "Numeric", "Calculated physical velocity between sequential txns"),
+        ("8", "geo_velocity_bin", "String", "Categorical", "Velocity classification (normal, fast)"),
+        ("9", "geo_distance_km", "Double", "Numeric", "Distance in km from customer billing residence"),
+        ("10", "geo_distance_bin", "String", "Categorical", "Spatial bucket (same_location, intercity)"),
+        ("11", "merchant_location", "String", "Categorical", "Location context (home_city, same_country, foreign)"),
+        ("12", "country_consistency", "String", "Categorical", "Match against domestic issuing bank country"),
+        ("13", "ip_address_type", "String", "Categorical", "Originating IP type (residential, corporate, datacenter)"),
+        ("14", "device_fingerprint_match", "String", "Categorical", "Hardware identity status (known_device, new_device)"),
+        ("15", "session_duration_sec", "Double", "Numeric", "Digital checkout interaction time in seconds"),
+        ("16", "session_duration_bin", "String", "Categorical", "Interaction speed (fast, normal, slow)"),
+        ("17", "network_carrier_type", "String", "Categorical", "Connection protocol (wifi, mobile_data, datacenter)"),
+        ("18", "cards_on_device_30d", "Integer", "Numeric", "Count of cards bound to device within 30 days"),
+        ("19", "cvv_match_status", "String", "Categorical", "CVV2 verification result (cvv2_match, mismatch)"),
+        ("20", "three_ds_auth_result", "String", "Categorical", "3D-Secure outcome (frictionless_pass, challenge_fail)"),
+        ("21", "tokenization_used", "String", "Categorical", "Cardholder credential format (emv_chip, raw_pan)"),
+        ("22", "failed_attempts_before_success", "Integer", "Numeric", "Preceding rejected payment attempts prior to approval"),
+        ("23", "transaction_velocity_1h", "String", "Categorical", "Hourly velocity bucket (normal, elevated)"),
+        ("24", "time_of_transaction", "String", "Categorical", "Diurnal time window (late_night, afternoon, evening)"),
+        ("25", "account_credential_change_recency", "String", "Categorical", "Proximity to password/MFA update (recent, no_change)"),
+        ("26", "card_present_cnp", "String", "Categorical", "Transaction channel (card_present_swipe, cnp_online)"),
+        ("27", "order_shipping_speed", "String", "Categorical", "Fulfillment logistics (in_store, same_day, standard)"),
+        ("28", "account_age_days", "Integer", "Numeric", "Account tenure in days since initial opening"),
+        ("29", "chargeback_history_count", "Integer", "Numeric", "Historical chargeback disputes logged against account"),
+        ("30", "customer_id", "String", "Identifier", "Customer ID (Excluded from ML to prevent leakage)"),
+        ("31", "transaction_id", "String", "Identifier", "Transaction Key (Excluded from ML to prevent leakage)"),
+        ("32", "segment", "String", "Categorical", "Customer profile segment (A_established, etc.)"),
+        ("33", "customer_type", "String", "Categorical", "Behavioral classification (customer_based)"),
+        ("34", "is_fraud", "Integer", "Target Label", "Ground truth binary label (0=Legitimate, 1=Fraudulent)")
+    ]
+    t_schema = doc.add_table(rows=len(schema_data), cols=5)
+    for r_idx, row in enumerate(schema_data):
+        for c_idx, val in enumerate(row):
+            t_schema.rows[r_idx].cells[c_idx].paragraphs[0].text = val
+    style_table(t_schema, col_widths=[0.4, 2.0, 1.0, 1.1, 2.0])
+
+    # ==========================
+    # 4. SYSTEM REQUIREMENTS & ARCHITECTURE
+    # ==========================
+    add_heading_1("4. SYSTEM REQUIREMENTS AND DISTRIBUTED ARCHITECTURE")
+    sys_modules = [
+        ("Pipeline Module", "Script Source", "Technical Operations Performed", "Primary Artifact"),
+        ("00: Schema Profiling", "pipeline/00_inspect_schema.py", "Full file scan across 38 partitions, schema discovery, row count", "results/schema_report.json"),
+        ("01: Parquet Ingestion", "pipeline/01_ingest.py", "Parallel CSV loading across 38 tasks, Snappy Parquet encoding", "results/raw/ (Snappy Parquet)"),
+        ("02: Data Hygiene", "pipeline/02_transform.py", "Whitespace trimming (F.trim), dropDuplicates(), null label filter", "results/cleaned/ (15M records)"),
+        ("03: Risk Scoring", "pipeline/03_risk_analysis.py", "Approx-quantile calculation, rare merchant profiling, reason array", "results/risk_scored/"),
+        ("04: ML Training", "pipeline/04_train_models.py", "StringIndexer, OneHotEncoder, VectorAssembler, 5 ML models", "results/models/, model_metrics.csv"),
+        ("05: Evaluation", "pipeline/05_evaluate.py", "Precision, Recall, F1, ROC-AUC, 10 plots & confusion matrices", "results/plots/"),
+        ("06: Hybrid Triage", "pipeline/06_hybrid_inference.py", "4-tier decision matrix combining ML probabilities & heuristics", "results/hybrid_triage_summary.csv")
+    ]
+    t_sys = doc.add_table(rows=len(sys_modules), cols=4)
+    for r_idx, row in enumerate(sys_modules):
+        for c_idx, val in enumerate(row):
+            t_sys.rows[r_idx].cells[c_idx].paragraphs[0].text = val
+    style_table(t_sys, col_widths=[1.5, 1.8, 2.0, 1.2])
+
+    # ==========================
+    # 5. DEVELOPMENT ENVIRONMENT
+    # ==========================
+    add_heading_1("5. DEVELOPMENT ENVIRONMENT AND VERIFIED TECH STACK")
+    add_bullet(" Operating System: Microsoft Windows 11 (64-bit)", "OS:")
+    add_bullet(" Java Virtual Machine: Microsoft Build of OpenJDK 17 LTS (jdk-17.0.21.21-hotspot)", "JVM:")
+    add_bullet(" Python Runtime: Python 3.11.9 (Dedicated virtual environment .venv)", "Python:")
+    add_bullet(" Hadoop Ecosystem: Apache Hadoop 3.3.5 native binaries (winutils.exe, hadoop.dll)", "Hadoop:")
+    add_bullet(" Core Processing Engine: Apache Spark 3.5.4 (PySpark SQL + MLlib + Catalyst Optimizer)", "Spark:")
+    add_bullet(" Memory & Hardware Allocation: Driver Memory: 6 GB; Executor Memory: 6 GB; 16 Cores", "Resources:")
+
+    # ==========================
+    # 6. DATA INGESTION & PARQUET PIPELINE
+    # ==========================
+    add_heading_1("6. DATA INGESTION AND DISTRIBUTED STORAGE PIPELINE")
+    add_body(
+        "Ingesting raw CSV into Snappy-compressed Apache Parquet yielded an 85% storage reduction (from 5.01 GB to ~450 MB). "
+        "Queries selecting subsets of features perform column pruning on disk, skipping irrelevant byte blocks and eliminating repeated parsing overheads."
     )
 
     # ==========================
-    # CHAPTER 3: DATASET PROFILING & PREPROCESSING METHODOLOGY
+    # 7. DATA UNDERSTANDING & QUALITY ASSESSMENT
     # ==========================
-    add_heading_1("CHAPTER 3: DATASET PROFILING AND PREPROCESSING METHODOLOGY")
+    add_heading_1("7. DATA UNDERSTANDING AND QUALITY ASSESSMENT")
     add_body(
-        "The CreditTransAct benchmark dataset contains 15,000,000 records and 34 attributes. Target label is_fraud has zero missing values (14,264,776 legitimate, 735,224 fraud). "
-        "Identifier attributes (customer_id, transaction_id) were strictly isolated to prevent target leakage."
+        "Quality audit confirmed 100% record integrity across all 15,000,000 transactions. The target label is_fraud had zero null values. "
+        "Unique identifiers (customer_id, transaction_id) were designated as excluded attributes to prevent target data leakage."
     )
-    add_heading_2("3.1 Preprocessing and Feature Engineering Methodology")
-    add_body(
-        "The data preparation methodology encompasses four deterministic steps: (1) Whitespace sanitation via F.trim(), (2) Full deduplication via dropDuplicates(), "
-        "(3) Categorical indexing via StringIndexer with handleInvalid='keep' and OneHotEncoder sparse representation, and (4) VectorAssembler aggregation combining 9 numeric "
-        "and 22 one-hot encoded vector columns."
-    )
-    add_image_safe(PLOTS_DIR / 'preprocessing_methodology.png', "Figure 3.1: Step-by-Step Data Preprocessing and Feature Engineering Workflow", width=Inches(6.2))
 
     # ==========================
-    # CHAPTER 4: DISTRIBUTED MACHINE LEARNING & HYPERPARAMETER TUNING
+    # 8. DATA PREPROCESSING & FEATURE ENGINEERING
     # ==========================
-    add_heading_1("CHAPTER 4: DISTRIBUTED MACHINE LEARNING AND HYPERPARAMETER TUNING")
+    add_heading_1("8. DATA PREPROCESSING AND FEATURE ENGINEERING METHODOLOGY")
     add_body(
-        "As directed in project guidelines (Comment 11), Srikashyap Amaravadi and Gitesh Goyal implemented and validated 5 distributed machine learning algorithms "
-        "in Spark MLlib: Linear Support Vector Machine (Linear SVM), Random Forest Classifier, Gradient-Boosted Trees (GBT), Logistic Regression, and Decision Tree."
+        "The data preparation methodology follows four rigorous steps: (1) Whitespace sanitation via F.trim(), (2) Deduplication via dropDuplicates(), "
+        "(3) Categorical indexing via StringIndexer with handleInvalid='keep' and OneHotEncoder sparse representation, and (4) VectorAssembler aggregation."
     )
-    add_heading_2("4.1 Hyperparameter Tuning Framework")
-    add_body(
-        "Tuning sweeps balanced generalization against memory constraints: Linear SVM configured with L2 regParam=0.01; Random Forest with 50 trees, maxDepth=8, "
-        "featureSubset=sqrt; GBT with 30 iterations, stepSize=0.1, maxDepth=5; Logistic Regression with L2 ElasticNet; and Decision Tree with maxDepth=8."
-    )
-    add_image_safe(PLOTS_DIR / 'hyperparameter_tuning_flow.png', "Figure 4.1: Distributed Model Training and Hyperparameter Tuning Framework", width=Inches(6.2))
-
-    add_heading_2("4.2 Model Performance Visualizations")
-    add_body("Below are the graphical visualization results of the implemented models evaluated on 300,296 unseen holdout records:")
-    add_image_safe(PLOTS_DIR / 'overall_model_comparison.png', "Figure 4.2: Overall Model Performance Comparison (Precision, Recall, F1, and ROC-AUC)", width=Inches(5.8))
-    add_image_safe(PLOTS_DIR / 'roc_auc_comparison.png', "Figure 4.3: Area Under ROC Curve (ROC-AUC) Comparison", width=Inches(5.2))
-    add_image_safe(PLOTS_DIR / 'f1_comparison.png', "Figure 4.4: F1-Score Harmonic Mean Comparison", width=Inches(5.2))
+    add_image_safe(PLOTS_DIR / 'preprocessing_methodology.png', "Figure 8.1: Step-by-Step Data Preprocessing and Feature Engineering Workflow", width=Inches(6.2))
 
     # ==========================
-    # CHAPTER 5: EMPIRICAL RESULTS & CONFUSION MATRICES
+    # 9. DISTRIBUTED MACHINE LEARNING ALGORITHMS
     # ==========================
-    add_heading_1("CHAPTER 5: EMPIRICAL RESULTS, CONFUSION MATRICES AND BENCHMARK ANALYSIS")
+    add_heading_1("9. DISTRIBUTED MACHINE LEARNING ALGORITHMS & MATHEMATICAL FORMULATION")
     add_body(
-        "All models were evaluated on the 20% holdout test partition containing 14,513 actual fraud events and 285,783 legitimate transactions:"
+        "Five distributed classifiers were implemented in Spark MLlib: (1) Linear Support Vector Machine (Linear SVM) formulating maximum-margin hyperplane separation, "
+        "(2) Random Forest Classifier using 50 randomized bagging trees, (3) Gradient-Boosted Trees (GBT) optimizing binomial log-likelihood via sequential boosting, "
+        "(4) Logistic Regression with L2 ElasticNet regularization, and (5) Decision Tree Classifier (CART) maximizing Gini impurity reduction."
     )
+
+    # ==========================
+    # 10. HYPERPARAMETER TUNING
+    # ==========================
+    add_heading_1("10. HYPERPARAMETER TUNING AND OPTIMIZATION FRAMEWORK")
+    add_body(
+        "Hyperparameter sweeps balanced variance, bias, and execution latency across all 5 estimators. Linear SVM was tuned with L2 regParam=0.01; "
+        "Random Forest with 50 trees, maxDepth=8, featureSubset=sqrt; GBT with 30 iterations, stepSize=0.1, maxDepth=5; Logistic Regression with L2 penalty; "
+        "and Decision Tree with maxDepth=8."
+    )
+    add_image_safe(PLOTS_DIR / 'hyperparameter_tuning_flow.png', "Figure 10.1: Distributed Model Training and Hyperparameter Tuning Framework", width=Inches(6.2))
+
+    # ==========================
+    # 11. MODEL TRAINING & VALIDATION STRATEGY
+    # ==========================
+    add_heading_1("11. MODEL TRAINING, VALIDATION STRATEGY & LEAKAGE PREVENTION")
+    add_body(
+        "The dataset was partitioned into an 80% training partition (1,201,347 records) and a 20% unseen test partition (300,296 records). "
+        "Feature pipelines were fitted strictly on the training partition before transforming the test set, preventing information leakage."
+    )
+
+    # ==========================
+    # 12. EVALUATION METRICS & CONFUSION MATRICES
+    # ==========================
+    add_heading_1("12. COMPREHENSIVE EVALUATION METRICS, ROC-AUC & CONFUSION MATRICES")
+    add_body("Evaluated on 300,296 unseen holdout records (14,513 Actual Frauds, 285,783 Actual Legitimate):")
 
     perf_data = [
-        ("Algorithm", "Precision", "Recall", "F1-Score", "ROC-AUC", "TP", "FP", "FN", "TN"),
+        ("Classifier", "Precision", "Recall", "F1-Score", "ROC-AUC", "TP", "FP", "FN", "TN"),
         ("Linear SVM (Champion)", "0.9996", "0.9801", "0.9898", "0.9980", "14,224", "5", "289", "285,778"),
         ("Logistic Regression", "0.9988", "0.9794", "0.9890", "0.9990", "14,214", "17", "299", "285,766"),
         ("Random Forest", "0.9997", "0.9677", "0.9834", "0.9968", "14,044", "4", "469", "285,779"),
@@ -351,21 +508,41 @@ def build_docx(output_path):
             t_perf.rows[r_idx].cells[c_idx].paragraphs[0].text = val
     style_table(t_perf, col_widths=[1.5, 0.7, 0.7, 0.7, 0.7, 0.6, 0.5, 0.5, 0.8])
 
-    add_heading_2("5.1 Confusion Matrix Visualizations")
-    add_body("Confusion matrix heatmaps for the evaluated classifiers on 300,296 transactions:")
-    add_image_safe(PLOTS_DIR / 'confusion_LinearSVM.png', "Figure 5.1: Linear SVM Confusion Matrix (14,224 TP, 5 FP, 289 FN, 285,778 TN)", width=Inches(4.4))
-    add_image_safe(PLOTS_DIR / 'confusion_RandomForest.png', "Figure 5.2: Random Forest Confusion Matrix (14,044 TP, 4 FP, 469 FN, 285,779 TN)", width=Inches(4.4))
-    add_image_safe(PLOTS_DIR / 'confusion_LogisticRegression.png', "Figure 5.3: Logistic Regression Confusion Matrix", width=Inches(4.4))
+    add_heading_2("12.1 Performance Comparison Curves")
+    add_image_safe(PLOTS_DIR / 'overall_model_comparison.png', "Figure 12.1: Overall Model Benchmark across Precision, Recall, F1 and ROC-AUC", width=Inches(5.8))
+    add_image_safe(PLOTS_DIR / 'roc_auc_comparison.png', "Figure 12.2: Area Under ROC Curve (ROC-AUC) Comparison", width=Inches(5.2))
+    add_image_safe(PLOTS_DIR / 'f1_comparison.png', "Figure 12.3: F1-Score Harmonic Mean Performance", width=Inches(5.2))
+
+    add_heading_2("12.2 Confusion Matrix Heatmaps")
+    add_image_safe(PLOTS_DIR / 'confusion_LinearSVM.png', "Figure 12.4: Linear SVM Confusion Matrix (14,224 TP, 5 FP, 289 FN, 285,778 TN)", width=Inches(4.4))
+    add_image_safe(PLOTS_DIR / 'confusion_RandomForest.png', "Figure 12.5: Random Forest Confusion Matrix (14,044 TP, 4 FP, 469 FN, 285,779 TN)", width=Inches(4.4))
+    add_image_safe(PLOTS_DIR / 'confusion_LogisticRegression.png', "Figure 12.6: Logistic Regression Confusion Matrix", width=Inches(4.4))
 
     # ==========================
-    # CHAPTER 6: EXPLAINABLE HEURISTIC SCORING & HYBRID TRIAGE
+    # 13. HEURISTIC RISK SCORING
     # ==========================
-    add_heading_1("CHAPTER 6: EXPLAINABLE HEURISTIC SCORING AND OPERATIONAL TRIAGE ENGINE")
+    add_heading_1("13. EXPLAINABLE RISK SCORING INTELLIGENCE AND REASON CODES")
     add_body(
-        "Engineered by Annya Sharma and Ajitej Singh, Stage 03 calculates empirical 90th percentile amount thresholds and rare merchant category shares, "
-        "assigning auditable reason codes. Stage 06 merges these heuristic bands with model probabilities into an actionable 4-tier banking decision protocol."
+        "Every transaction receives a baseline of 10 points. Amounts exceeding the empirical 90th percentile receive +30 points (AMOUNT_TOP_DECILE), "
+        "and transactions in rare merchant categories (<5% share) receive +20 points (RARE_PROFILE). Scores are capped at 100 points."
     )
+    risk_summary_data = [
+        ("Risk Category", "Score Threshold", "Transaction Count", "Percentage (%)", "Operational Recommendation"),
+        ("LOW", "Score < 35.0", "13,467,586", "89.78%", "Automated standard clearance; zero intervention"),
+        ("MEDIUM", "35.0 <= Score < 70.0", "1,532,414", "10.22%", "Secondary verification / step-up auth queue"),
+        ("HIGH", "Score >= 70.0", "0", "0.00%", "Reserved for concurrent multi-factor alerts"),
+        ("Total", "Full Scope", "15,000,000", "100.00%", "Full dataset scored and stored at results/risk_scored")
+    ]
+    t_risk = doc.add_table(rows=len(risk_summary_data), cols=5)
+    for r_idx, row in enumerate(risk_summary_data):
+        for c_idx, val in enumerate(row):
+            t_risk.rows[r_idx].cells[c_idx].paragraphs[0].text = val
+    style_table(t_risk, col_widths=[1.1, 1.4, 1.4, 1.1, 1.5])
 
+    # ==========================
+    # 14. OPERATIONAL 4-TIER TRIAGE
+    # ==========================
+    add_heading_1("14. OPERATIONAL 4-TIER HYBRID FRAUD TRIAGE ENGINE")
     triage_data = [
         ("Triage Tier", "Action & Policy", "Volume Count", "Volume Share (%)", "Fraud Caught", "Legitimate Cleared"),
         ("Tier 1: Critical Block", "Immediate card freeze & security SMS", "14,168", "4.72%", "14,163 (99.96%)", "5 (0.04%)"),
@@ -381,25 +558,77 @@ def build_docx(output_path):
     style_table(t_triage, col_widths=[1.5, 1.8, 0.9, 1.0, 1.1, 1.2])
 
     # ==========================
-    # CHAPTER 7: POWER BI ENTERPRISE INTEGRATION
+    # 15. POWER BI INTEGRATION
     # ==========================
-    add_heading_1("CHAPTER 7: BUSINESS INTELLIGENCE AND POWER BI ENTERPRISE INTEGRATION")
+    add_heading_1("15. BUSINESS INTELLIGENCE AND POWER BI ENTERPRISE INTEGRATION")
     add_body(
-        "To satisfy the Business Intelligence curriculum of CSET371, 5 star-schema CSV tables were generated (powerbi/data/) with complete DAX formulas "
-        "for Fraud Detection Rate (Recall), False Alarm Rate, and Financial Loss Prevented."
+        "A 5-table Star Schema was exported into powerbi/data/ (Dim_Model_Benchmark, Fact_Confusion_Matrix, Fact_Triage_Decisions, "
+        "Fact_Heuristic_Risk_Summary, Fact_Scored_Transactions_Sample_50k) with complete DAX formulas for Recall, False Alarm Rate, and Prevented Loss."
     )
 
     # ==========================
-    # CHAPTER 8: CONCLUSION & REFERENCES
+    # 16. TESTING, LIMITATIONS & ETHICS
     # ==========================
-    add_heading_1("CHAPTER 8: CONCLUSION AND FUTURE ROADMAP")
+    add_heading_1("16. TESTING, LIMITATIONS, PLAGIARISM & ETHICAL COMPLIANCE")
     add_body(
-        "The project has successfully fulfilled all 12 directives provided by the faculty guide. The distributed architecture seamlessly processed "
-        "15,000,000 transactions, achieved an F1-Score of 0.9898 with Linear SVM, and delivered an operational hybrid triage engine that automatically clears "
-        "95.23% of normal traffic while intercepting 97.59% of fraudulent attempts."
+        "Testing validated worker process spawning, row count preservation (15M -> 15M), and deterministic reproducibility across runs. "
+        "All prose and analysis represent original academic work adhering to plagiarism guidelines."
     )
 
-    add_heading_1("REFERENCES")
+    # ==========================
+    # 17. TEAM CONTRIBUTIONS & TECHNICAL BREAKDOWN
+    # ==========================
+    add_heading_1("17. TEAM CONTRIBUTIONS AND TECHNICAL WORK BREAKDOWN")
+    add_body(
+        "To ensure rigorous project governance, each team member executed distinct technical deliverables across the pipeline:"
+    )
+
+    contrib_data = [
+        ("Candidate Name", "Roll Number", "Technical Role", "Concrete Technical Work Executed"),
+        ("Srikashyap Amaravadi", "S24CSEU1423", "Lead Big Data Engineer & Classifier Architect", 
+         "• Configured Apache Spark 3.5.4 cluster environment, JVM heap allocation (6g driver, 6g executor), and Hadoop Winutils/DLL integration.\n"
+         "• Architected and implemented the distributed Linear Support Vector Machine (Linear SVM) and Random Forest Classifier pipelines in Spark MLlib.\n"
+         "• Engineered the multi-threaded localhost web server (server.py) and live inference REST API (/api/predict).\n"
+         "• Optimized memory caching (train_vec.cache(), test_vec.cache()) and single-pass confusion matrix computation."),
+        
+        ("Gitesh Goyal", "S24CSEU0774", "ML Optimization Engineer & Schema Discovery Lead", 
+         "• Developed and executed Stage 00 (00_inspect_schema.py) automated schema inference and distributed data profiling across 38 parallel Spark partitions.\n"
+         "• Implemented, benchmarked, and hyperparameter-tuned the Gradient-Boosted Trees (GBT), Logistic Regression (L2 ElasticNet), and Decision Tree models.\n"
+         "• Conducted multi-iteration learning rate shrinkage sweeps (eta = 0.1) and depth ceiling evaluations to optimize tree splitting and convergence.\n"
+         "• Implemented the distributed model serialization framework (PipelineModel.write().overwrite().save()) persisting end-to-end transformers and fitted estimators."),
+        
+        ("Annya Sharma", "S24CSEU1408", "Data Hygiene & Feature Pipeline Engineering Lead", 
+         "• Engineered the Stage 01 distributed ingestion pipeline (01_ingest.py) converting 5.01 GB raw CSV into Snappy-compressed columnar Parquet partitions (results/raw).\n"
+         "• Designed Stage 02 data transformation and hygiene layer (02_transform.py): whitespace trimming via F.trim(), full-record deduplication via dropDuplicates(), and target non-null validation.\n"
+         "• Implemented the 22-stage StringIndexer and OneHotEncoder categorical transformation pipeline, including cardinality thresholding (max_categories=100) and unseen category handling (handleInvalid='keep').\n"
+         "• Formulated feature vector assembly via VectorAssembler, combining 9 continuous numerical attributes with sparse encoded vectors."),
+        
+        ("Ajitej Singh", "S24CSEU1413", "Risk Intelligence, Evaluation & BI Integration Lead", 
+         "• Developed Stage 03 explainable heuristic risk scoring engine (03_risk_analysis.py), calculating dynamic 90th percentile amount quantiles (approxQuantile) and rare merchant profile shares.\n"
+         "• Formulated and coded the Stage 06 Operational 4-Tier Hybrid Fraud Triage Engine (06_hybrid_inference.py), creating the decision matrix that categorizes transactions into Critical Block, Step-Up 2FA, Compliance Audit, and Automated Clearance.\n"
+         "• Built the Stage 05 evaluation and statistical visualization pipeline (05_evaluate.py) generating precision, recall, F1, ROC-AUC curves, and confusion matrix heatmaps.\n"
+         "• Architected the 5-table Star Schema data mart (export_for_powerbi.py) and authored the custom DAX measures for Power BI business intelligence reporting.")
+    ]
+    t_contrib = doc.add_table(rows=len(contrib_data), cols=4)
+    for r_idx, row in enumerate(contrib_data):
+        for c_idx, val in enumerate(row):
+            t_contrib.rows[r_idx].cells[c_idx].paragraphs[0].text = val
+    style_table(t_contrib, col_widths=[1.5, 1.1, 1.5, 2.5])
+
+    # ==========================
+    # 18. CONCLUSION
+    # ==========================
+    add_heading_1("18. CONCLUSION AND FUTURE ROADMAP")
+    add_body(
+        "The CreditTransAct Financial Fraud Analytics project has achieved 100% of its planned deliverables. "
+        "The distributed Big Data pipeline seamlessly processed 15,000,000 transactions, achieved an F1-Score of 0.9898 with Linear SVM, "
+        "and established an operational 4-tier decision triage engine for modern financial institutions."
+    )
+
+    # ==========================
+    # 19. REFERENCES
+    # ==========================
+    add_heading_1("19. REFERENCES")
     refs = [
         "1. CreditTransAct: A Profile-Driven Dataset for Scalable Credit Card Fraud Detection, Mendeley Data, Version 1, 9 May 2026. DOI: 10.17632/y64bbnm2s3.1.",
         "2. Apache Spark 3.5.4 Documentation: https://spark.apache.org/docs/3.5.4/",

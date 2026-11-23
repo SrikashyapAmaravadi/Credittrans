@@ -1,275 +1,326 @@
 # BENNETT UNIVERSITY
 ## SCHOOL OF COMPUTER SCIENCE ENGINEERING & TECHNOLOGY
 
-# COMPREHENSIVE PROJECT IMPLEMENTATION REPORT
-## SCALABLE FINANCIAL FRAUD DETECTION AND RISK INTELLIGENCE USING APACHE SPARK, HADOOP AND MACHINE LEARNING
+### PROJECT IMPLEMENTATION FINAL REPORT — MILESTONE 3 & FINAL ASSESSMENT
+
+**SCALABLE FINANCIAL FRAUD DETECTION AND RISK INTELLIGENCE USING APACHE SPARK, HADOOP AND MACHINE LEARNING**
 
 - **Course Code**: CSET371 — Big Data Analytics and Business Intelligence
-- **Faculty Guide**: Dr. Aditya Bhardwaj
+- **Project Guide**: Dr. Aditya Bhardwaj
 - **Academic Year**: 2026
 
 **Submitted by:**
-- **Srikashyap Amaravadi** (S24CSEU1423) — *Machine Learning Model Engineering, Spark Optimization & Distributed Training*
-- **Gitesh Goyal** (S24CSEU0774) — *Deep/ML Architecture Implementation, Hyperparameter Optimization & Model Validation*
-- **Annya Sharma** (S24CSEU1408) — *Data Profiling, Quality Assurance, Hygiene & Feature Transformation Pipeline*
-- **Ajitej Singh** (S24CSEU1413) — *Heuristic Risk Intelligence, Hybrid Triage Decision Matrix & Report Synthesis*
+- **Srikashyap Amaravadi** (S24CSEU1423) — *Lead Big Data Engineer & Classifier Architect*
+- **Gitesh Goyal** (S24CSEU0774) — *Machine Learning Optimization Engineer & Schema Discovery Lead*
+- **Annya Sharma** (S24CSEU1408) — *Data Hygiene & Feature Pipeline Engineering Lead*
+- **Ajitej Singh** (S24CSEU1413) — *Risk Intelligence, Evaluation Analytics & BI Integration Lead*
 
 ---
 
 ## DECLARATION OF ORIGINALITY AND PLAGIARISM COMPLIANCE
-We hereby declare that this project report titled **"Scalable Financial Fraud Detection and Risk Intelligence Using Apache Spark, Hadoop and Machine Learning"** is our original work conducted under the guidance of **Dr. Aditya Bhardwaj**, School of Computer Science Engineering and Technology, Bennett University.
+We hereby declare that this final project report titled **"Scalable Financial Fraud Detection and Risk Intelligence Using Apache Spark, Hadoop and Machine Learning"** is an authentic and original record of research and software engineering executed under the supervision of **Dr. Aditya Bhardwaj**, School of Computer Science Engineering and Technology, Bennett University.
 
-All methodologies, architectures, algorithms, and empirical results presented in this report were developed and executed on the designated distributed computational environment. Wherever literature, benchmarks, or third-party frameworks have been utilized, they have been comprehensively cited adhering to standard academic integrity and anti-plagiarism guidelines. No synthetic or AI-generated visual graphics have been utilized; all diagrams, confusion matrices, and metric plots were generated directly from measured system execution and deterministic mathematical visualizations.
-
----
-
-## EXECUTIVE SUMMARY
-Modern electronic payment infrastructures handle billions of dollars in daily transaction volume across millions of distinct accounts. While fraudulent transactions account for a minority fraction of total traffic (historically between 0.1% and 5.0%), the resulting economic losses, chargeback costs, and reputational damage to banking institutions are catastrophic. Traditional relational database management systems (RDBMS) and single-node machine learning platforms cannot scale to multi-gigabyte transaction streams without encountering prohibitive computational bottlenecks and out-of-memory (OOM) failures.
-
-This project delivers an enterprise-grade, distributed Big Data and Machine Learning pipeline engineered using **Apache Spark 3.5.4**, **Apache Hadoop 3.3.5**, and **Python 3.11**. The platform was deployed and empirically validated on the benchmark **CreditTransAct** dataset (`credit_card_fraud.csv`), encompassing **15,000,000 transaction records across 34 feature dimensions (~5.01 GB uncompressed)**.
-
-### Core Deliverables and Empirical Outcomes:
-1. **High-Throughput Distributed Ingestion**: Converted raw 5.01 GB CSV data into snappy-compressed, columnar Apache Parquet partitions (`results/raw`), yielding an 85% compression ratio and eliminating repeated CSV parsing overheads.
-2. **Deterministic Data Hygiene & Feature Preprocessing**: Implemented string normalization, deduplication, null-label validation, and isolated identifiers (`customer_id`, `transaction_id`) to strictly prevent target data leakage (`results/cleaned`).
-3. **Explainable Rule-Based Heuristic Scoring**: Developed an auditable heuristic risk scoring engine evaluating empirical 90th percentile amount spikes (`AMOUNT_TOP_DECILE`) and rare merchant category profiles (`RARE_PROFILE`) across all 15 million transactions (`results/risk_scored`).
-4. **Distributed MLlib Model Benchmark & Hyperparameter Tuning**: Evaluated 5 distributed machine learning and deep learning algorithms on 1.5 million in-scope transactions: **Linear Support Vector Machine (Linear SVM), Random Forest, Gradient-Boosted Trees (GBT), Logistic Regression, and Decision Tree**.
-   - **Champion Model — Linear SVM**: Achieved an **F1-Score of 0.9898**, **Recall of 98.01%**, and an **ROC-AUC of 0.9980** on an unseen holdout partition of 300,296 records.
-   - **Precision Leader — Random Forest**: Achieved **99.97% Precision**, recording only **4 false alarms** across 285,783 legitimate transactions.
-5. **Operational 4-Tier Hybrid Triage Engine**: Formulated an actionable operational policy matrix merging model probabilities with heuristic risk constraints:
-   - **Tier 1 (Critical Emergency)**: 14,168 transactions flagged — **14,163 actual frauds halted instantly (99.96% accuracy)**.
-   - **Tier 4 (Automated Clearance)**: **95.23% of all transactions (285,963 records)** cleared with zero friction and sub-millisecond latency.
-6. **Enterprise Business Intelligence (BI) Integration**: Exported a Star Schema data mart comprising 5 normalized tables with custom DAX measures for instant deployment into **Microsoft Power BI**.
+All data processing workflows, distributed feature engineering stages, machine learning estimators, heuristic decision algorithms, and analytical visualizations were developed, executed, and benchmarked on our active distributed execution environment. Where literature, benchmark datasets, or foundational algorithms have been used, they have been comprehensively cited in accordance with University academic integrity standards and anti-plagiarism guidelines. No AI-generated or synthetic performance graphics were used; all diagrams, confusion matrices, and benchmark graphs were generated directly from measured empirical runs.
 
 ---
 
-## CHAPTER 1: INTRODUCTION & PROPOSED METHODOLOGY
+## ABSTRACT
+Digital electronic payment systems process millions of high-velocity financial events per hour. While fraudulent events constitute a minority fraction (~4.90%) of aggregate traffic, their financial and reputational impacts are devastating. Monolithic single-node analytical systems suffer severe memory exhaustion and computational latency when processing multi-gigabyte transaction streams under extreme class imbalance.
 
-### 1.1 Context and Problem Statement
-Financial fraud in digital payment networks presents severe computational and statistical challenges:
-- **Massive Computational Scale**: Processing 15 million transaction records with 34 features entails handling hundreds of millions of data points, overwhelming single-machine pandas/scikit-learn workflows.
-- **Extreme Class Imbalance**: Genuine transactions drastically outnumber fraudulent events (~95.10% legitimate vs. ~4.90% fraud). Naive classification algorithms biased toward the majority class achieve high nominal accuracy while failing to detect critical fraud occurrences.
-- **Strict Latency and Explainability Requirements**: Banking regulations mandate that automated systems provide explainable audit trails (reason codes) rather than uninterpretable black-box decisions, without adding latency to customer checkouts.
+This report documents the end-to-end completion of the **CreditTransAct Financial Fraud Analytics Platform** engineered using **Apache Spark 3.5.4**, **Apache Hadoop 3.3.5**, and **Python 3.11**. The system was deployed and empirically validated on the benchmark **CreditTransAct** dataset (`credit_card_fraud.csv`), comprising **15,000,000 transaction records across 34 feature attributes** (~5.01 GB uncompressed CSV).
 
-### 1.2 Proposed Methodology Architecture
-To address these challenges, the team engineered a multi-stage distributed processing and machine learning pipeline. The architecture decouples storage, batch feature transformation, heuristic explainability, model training, and operational inference into distinct layers.
+The end-to-end platform encompasses:
+1. **Automated Schema Inference & Distributed Profiling**: Scalable profiling across 38 parallel Spark partitions (`results/schema_report.json`).
+2. **Columnar Column-Pruned Ingestion**: Converting raw 5.01 GB CSV into Snappy-compressed columnar Parquet format (`results/raw`), yielding an 85% storage reduction.
+3. **Data Hygiene & Target Leakage Prevention**: Full deduplication, string trimming, and strict isolation of identifier fields (`customer_id`, `transaction_id`) (`results/cleaned`).
+4. **Explainable Heuristic Risk Scoring**: Multi-factor quantile amount scoring (`AMOUNT_TOP_DECILE`) and rare merchant profile profiling (`RARE_PROFILE`) across all 15 million transactions (`results/risk_scored`).
+5. **Distributed MLlib Model Benchmark & Hyperparameter Tuning**: 5 candidate Spark MLlib classifiers evaluated across an 80/20 train/test split (300,296 unseen holdout records): **Linear Support Vector Machine (Linear SVM), Random Forest, Gradient-Boosted Trees (GBT), Logistic Regression, and Decision Tree**.
+   - **Champion Model — Linear SVM**: Achieved an **F1-Score of 0.9898**, **Recall of 98.01%**, and **ROC-AUC of 0.9980**, missing only 289 fraud attempts while recording only 5 false alarms across 285,783 legitimate transactions.
+   - **Precision Leader — Random Forest**: Achieved **99.97% Precision**, recording only **4 false alarms**.
+6. **Operational 4-Tier Hybrid Triage Engine**: Integrates model probabilities with heuristic risk constraints, achieving **automated instantaneous clearance for 95.23% of normal transactions (285,963 records)** and **instant blocking of 97.59% of fraudulent attempts (14,163 frauds)** at Tier 1 with 99.96% accuracy.
+7. **Business Intelligence & Power BI Data Mart**: A 5-table Star Schema with custom DAX measures for executive reporting.
+
+---
+
+## TABLE OF CONTENTS
+1. Introduction & Proposed Methodology
+2. Problem Statement and Architectural Objectives
+3. Dataset Description and Verified 34-Attribute Catalog
+4. System Requirements and Distributed Architecture
+5. Development Environment and Verified Tech Stack
+6. Data Ingestion and Distributed Storage Pipeline
+7. Data Understanding and Quality Assessment
+8. Data Preprocessing and Feature Engineering Methodology
+9. Distributed Machine Learning Algorithms & Mathematical Formulation
+10. Hyperparameter Tuning and Optimization Framework
+11. Model Training, Validation Strategy & Leakage Prevention
+12. Comprehensive Evaluation Metrics, ROC-AUC & Confusion Matrices
+13. Explainable Risk Scoring Intelligence and Reason Codes
+14. Operational 4-Tier Hybrid Fraud Triage Engine
+15. Business Intelligence and Power BI Enterprise Integration
+16. Testing, Limitations, Plagiarism & Ethical Compliance
+17. Team Contributions and Technical Work Breakdown
+18. Conclusion and Future Roadmap
+19. References
+
+---
+
+## 1. INTRODUCTION & PROPOSED METHODOLOGY
+Digital banking networks process millions of payment events per hour. While fraudulent events constitute a minority fraction of total traffic, their ramifications are severe. Modern fraud detection faces three core challenges:
+- **Massive Computational Scale**: Ingestion and analytical pipelines must process millions of records without memory exhaustion.
+- **Extreme Class Imbalance**: Genuine transactions drastically outnumber fraudulent attempts (~95.10% legitimate vs. ~4.90% fraud).
+- **Operational Interpretability**: Financial compliance standards require that flagged transactions be accompanied by transparent, auditable reason codes rather than opaque black-box verdicts.
+
+### Proposed Methodology Architecture
+The platform decouples ingestion, hygiene, heuristic explainability, feature engineering, distributed training, evaluation, and operational triage into distinct, modular layers:
 
 ```
-+-----------------------------------------------------------------------------+
-|                      PROPOSED METHODOLOGY ARCHITECTURE                      |
-+-----------------------------------------------------------------------------+
-|  1. RAW DATA SOURCE                                                         |
-|     CreditTransAct Benchmark | 15,000,000 Rows | 34 Features (~5.01 GB)     |
-+--------------------------------------v--------------------------------------+
-|  2. DISTRIBUTED INGESTION LAYER (pipeline/01_ingest.py)                     |
-|     PySpark CSV Reader -> Schema Discovery -> Snappy Parquet (results/raw)   |
-+--------------------------------------v--------------------------------------+
-|  3. DATA PREPROCESSING & HYGIENE LAYER (pipeline/02_transform.py)           |
-|     String Trimming -> Deduplication -> Null Safety -> Leakage Isolation    |
-+-------------------+----------------------------------+----------------------+
-                    |                                  |
-                    v                                  v
-+-----------------------------------+  +--------------------------------------+
-| 4. HEURISTIC RISK ENGINE          |  | 5. FEATURE ENGINEERING PIPELINE      |
-|    (pipeline/03_risk_analysis.py) |  |    (pipeline/04_train_models.py)     |
-|    - Baseline Score: 10 pts       |  |    - 22 StringIndexer stages         |
-|    - 90th Pct Amount: +30 pts     |  |    - 22 OneHotEncoder stages         |
-|    - Rare Profile: +20 pts        |  |    - 9 Numeric VectorAssembler       |
-|    - Bands: LOW / MEDIUM / HIGH   |  |    - 80/20 Stratified Partitioning   |
-+-------------------+---------------+  +-------------------+------------------+
-                    |                                      |
-                    |                                      v
-                    |                  +--------------------------------------+
-                    |                  | 6. DISTRIBUTED MODEL TRAINING        |
-                    |                  |    - Linear SVM (Champion)           |
-                    |                  |    - Random Forest (50 Trees)        |
-                    |                  |    - Gradient-Boosted Trees (GBT)    |
-                    |                  |    - Logistic Regression (L2 Reg)    |
-                    |                  |    - Decision Tree Classifier        |
-                    |                  +-------------------+------------------+
-                    |                                      |
-                    |                                      v
-                    |                  +--------------------------------------+
-                    |                  | 7. EVALUATION & BENCHMARKING         |
-                    |                  |    (pipeline/05_evaluate.py)         |
-                    |                  |    - Precision, Recall, F1, ROC-AUC  |
-                    |                  |    - 5 Confusion Matrix Heatmaps     |
-                    |                  +-------------------+------------------+
-                    |                                      |
-                    +-------------------+------------------+
-                                        v
-+-----------------------------------------------------------------------------+
-| 8. HYBRID OPERATIONAL FRAUD TRIAGE ENGINE (pipeline/06_hybrid_inference.py) |
-|    - Tier 1: Critical Emergency (Block & Alert: p >= 0.85) -> 97.59% Caught |
-|    - Tier 2: Step-Up Auth (2FA Challenge: 0.35 <= p < 0.85)                 |
-|    - Tier 3: Compliance Audit (Offline Queue: p >= 0.20)                    |
-|    - Tier 4: Automated Clearance (Frictionless: p < 0.20) -> 95.23% Cleared |
-+-----------------------------------------------------------------------------+
+[Raw CSV Dataset: 15M Records, 34 Features (~5.01 GB)]
+                        │
+                        ▼
+[Stage 0: Schema Profiling] ──► results/schema_report.json
+                        │
+                        ▼
+[Stage 1: Columnar Ingestion] ──► results/raw (Snappy Parquet)
+                        │
+                        ▼
+[Stage 2: Transformation & Hygiene] ──► results/cleaned (Clean Parquet)
+                        │
+          ┌─────────────┴────────────────────────┐
+          ▼                                      ▼
+[Stage 3: Heuristic Scoring]           [Stage 4: Feature Pipeline]
+ - Top Decile Amount: +30 pts           - 22 StringIndexers
+ - Rare Merchant Share: +20 pts         - 22 OneHotEncoders
+ - Score Bands (LOW/MED/HIGH)           - 9 Numeric VectorAssembler
+          │                             - 80/20 Stratified Partitioning
+          │                                      │
+          │                                      ▼
+          │                            [Distributed MLlib Training]
+          │                             - Linear SVM (Champion)
+          │                             - Random Forest (50 Trees)
+          │                             - Gradient-Boosted Trees (GBT)
+          │                             - Logistic Regression (L2)
+          │                             - Decision Tree Classifier
+          │                                      │
+          │                                      ▼
+          │                            [Stage 5: Evaluation & Plots]
+          │                             - Precision, Recall, F1, AUC
+          │                             - Confusion Matrix Heatmaps
+          │                                      │
+          └──────────────────┬───────────────────┘
+                             ▼
+[Stage 6: Operational 4-Tier Hybrid Fraud Triage Engine]
+ - Tier 1: Critical Emergency (Block & Alert: p >= 0.85) -> 97.59% Caught
+ - Tier 2: Step-Up Auth (2FA Challenge: 0.35 <= p < 0.85)
+ - Tier 3: Compliance Audit (Offline Queue: p >= 0.20)
+ - Tier 4: Automated Clearance (Frictionless: p < 0.20) -> 95.23% Cleared
 ```
 
 ---
 
-## CHAPTER 2: THEORETICAL FOUNDATION & BIG DATA DISTRIBUTED FRAMEWORK
+## 2. PROBLEM STATEMENT AND ARCHITECTURAL OBJECTIVES
 
-### 2.1 Apache Spark 3.5.4 Distributed Execution Architecture
-Apache Spark provides a distributed general-purpose cluster-computing framework built around Resilient Distributed Datasets (RDDs) and the Catalyst Query Optimizer. The runtime model operates under a Driver-Executor topology:
-- **Driver Node**: Manages the `SparkSession`, translates high-level PySpark code into a Directed Acyclic Graph (DAG) of logical execution stages, optimizes execution plans via the Catalyst optimizer, and schedules tasks across executor cores.
-- **Executors**: Background worker JVM processes allocated with dedicated heap memory (`spark.driver.memory=6g`, `spark.executor.memory=6g`) executing task partitions concurrently across 16 logical cores.
-- **Tungsten Execution Engine**: Manages memory off-heap directly in raw binary format, eliminating JVM garbage collection overhead and leveraging hardware-level CPU cache locality.
+### 2.1 Problem Statement
+Modern financial institutions require scalable, automated architectures capable of ingesting high-velocity transaction streams, assessing data quality, isolating risk indicators, and prioritizing suspicious activity for human investigators without introducing prohibitive computational latencies or high false-positive rates.
 
-### 2.2 Storage Optimization: CSV vs. Snappy-Compressed Columnar Parquet
-Reading raw uncompressed CSV requires intensive CPU overhead on every execution because:
-1. Every numeric value must be parsed from ASCII strings into binary float/integer representations.
-2. In relational queries selecting only a subset of features (e.g., amount, merchant category, label), the execution engine must perform full row-by-row disk reads across the entire 5.01 GB file.
-3. CSV provides zero native schema metadata, requiring expensive schema inference passes (`inferSchema=true`).
-
-In contrast, **Apache Parquet** delivers:
-- **Columnar Layout**: Data is organized by column rather than row. When computing feature subsets, entire blocks of irrelevant columns are skipped on disk (I/O pruning).
-- **Dictionary & Bit-Packed Encoding**: Categorical attributes with repetitive string values (e.g., merchant categories, transaction types) are stored as compact integer indices.
-- **Snappy Compression**: High-throughput compression codec offering rapid decompression speeds with minimal CPU overhead, reducing the storage footprint from 5.01 GB to ~450 MB (an 85% storage reduction).
-- **Embedded Statistics**: Parquet file footers maintain column-level min/max statistics, enabling dictionary pruning before partitions are loaded into memory.
+### 2.2 Core Technical Objectives
+1. **Distributed Scalability**: Eliminate single-node I/O bottlenecks by converting raw CSV data into partitioned, snappy-compressed columnar Parquet files.
+2. **Deterministic Preprocessing & Leakage Prevention**: Isolate customer and transaction identifiers, eliminate exact duplicates, and handle categorical variables cleanly.
+3. **Transparent Heuristic Risk Intelligence**: Formulate empirical 90th percentile amount thresholds and rare merchant volume shares to assign auditable reason codes.
+4. **Distributed MLlib Model Benchmark & Hyperparameter Optimization**: Benchmark linear, tree-based, and ensemble classifiers in Spark MLlib under heavy class imbalance.
+5. **Operational 4-Tier Hybrid Triage**: Establish an actionable operational triage engine combining ML probabilities with heuristic rules to automate customer clearance.
+6. **Enterprise Business Intelligence**: Provide pre-modeled Star Schema datasets and custom DAX measures for Power BI dashboards.
 
 ---
 
-## CHAPTER 3: DATASET SPECIFICATION, PROFILING & PREPROCESSING METHODOLOGY
+## 3. DATASET DESCRIPTION AND VERIFIED 34-ATTRIBUTE CATALOG
 
-### 3.1 CreditTransAct Dataset Profiling
-The system was validated on the full **CreditTransAct** dataset (`credit_card_fraud.csv`), characterized as follows:
-- **Total Records**: 15,000,000 transactions.
-- **Total Feature Dimensions**: 34 columns.
-- **Class Label**: `is_fraud` (Binary: 0 = Legitimate, 1 = Fraudulent).
-- **Target Distribution**:
-  - Legitimate (0): **14,264,776 transactions (95.10%)**
-  - Fraudulent (1): **735,224 transactions (4.90%)**
-  - Missing Label Entries: **0 (100% complete)**
+The project utilizes the **CreditTransAct: A Profile-Driven Dataset for Scalable Credit Card Fraud Detection** benchmark (Mendeley Data, DOI: 10.17632/y64bbnm2s3.1).
 
-### 3.2 Feature Taxonomy & Isolation
-Attributes are partitioned into three functional categories:
-1. **Isolated Identifiers (Target Leakage Elimination)**:
-   - `customer_id`: Unique alphanumeric customer token.
-   - `transaction_id`: Unique transaction identifier.
-   *Methodology*: Explicitly excluded via `exclude_columns` in `project_config.json`. Retaining customer or transaction IDs allows tree models to memorize specific individuals rather than generalizable behavioral patterns.
-2. **Continuous Numerical Features (9 Attributes)**:
-   - `transaction_amount`: Transaction currency value.
-   - `avg_amount_deviation_sigma`: Standard deviation deviation from customer historical mean.
-   - `geo_velocity_kmh`: Calculated physical velocity between consecutive transactions.
-   - `geo_distance_km`: Spatial distance between terminal location and cardholder home address.
-   - `session_duration_sec`: Duration of the checkout interaction session.
-   - `cards_on_device_30d`: Count of distinct payment cards associated with the device in 30 days.
-   - `failed_attempts_before_success`: Unsuccessful PIN/CVV entry attempts prior to approval.
-   - `account_age_days`: Age of the customer banking account in days.
-   - `chargeback_history_count`: Cumulative lifetime chargeback disputes logged.
-3. **Categorical Behavioral Features (22 Attributes)**:
-   - `transaction_amount_bin`, `merchant_category`, `merchant_risk_score`, `merchant_category_vs_history`, `geo_velocity_bin`, `geo_distance_bin`, `merchant_location`, `country_consistency`, `ip_address_type`, `device_fingerprint_match`, `session_duration_bin`, `network_carrier_type`, `cvv_match_status`, `three_ds_auth_result`, `tokenization_used`, `transaction_velocity_1h`, `time_of_transaction`, `account_credential_change_recency`, `card_present_cnp`, `order_shipping_speed`, `segment`, `customer_type`.
+### 3.1 Dataset Vital Statistics
+- **Source File**: `data/credit_card_fraud.csv`
+- **File Size**: 5,009,909,516 bytes (~5.01 GB uncompressed CSV)
+- **Total Ingested Records**: **15,000,000 rows**
+- **Total Attributes**: **34 columns** (33 predictors/metadata fields + 1 ground-truth label `is_fraud`)
+- **Target Ground Truth**: `is_fraud` (0 = Legitimate, 1 = Fraudulent)
+- **Class Balance**: 14,264,776 Legitimate (95.10%), 735,224 Fraudulent (4.90%)
+- **Missing Label Values**: 0 (100% complete)
 
-### 3.3 Detailed Preprocessing Steps
-The data preparation methodology follows four rigorous, deterministic steps:
-- **Step 1: Whitespace Sanitation & Type Normalization**: Iterates through all string fields applying `F.trim()` to eliminate leading/trailing whitespace variations that cause false categorical splits.
-- **Step 2: Deduplication & Null Validation**: Evaluates full-row deduplication across all 34 attributes via `df.dropDuplicates()`, followed by strict null-safety filtering (`filter(F.col('label').isNotNull())`).
-- **Step 3: Cardinality Thresholding & StringIndexing**: For each categorical attribute, distinct cardinality is verified against `max_categories=100`. Features with distinct counts $\le 100$ are indexed via `StringIndexer(inputCol=c, outputCol=idx_c, handleInvalid='keep')`, mapping distinct strings to integer frequency ranks ($0, 1, \dots, k-1$). Unseen categories in test partitions are routed to a dedicated bucket index via `handleInvalid='keep'`.
-- **Step 4: One-Hot Encoding & Vector Assembly**: Indexed features are transformed into sparse binary vectors via `OneHotEncoder(inputCols=idx_cols, outputCols=ohe_cols, handleInvalid='keep')`. Continuous numericals and sparse one-hot encoded vectors are concatenated into a single unified vector column via `VectorAssembler(inputCols=numeric + ohe_cols, outputCol='features')`.
+### 3.2 Complete 34-Attribute Catalog (from `results/schema_report.json`)
+
+| # | Attribute Name | Inferred Spark Type | Category | Semantic Description |
+|:---|:---|:---|:---|:---|
+| 1 | `transaction_amount` | Double | Numeric | Numerical monetary value of the transaction |
+| 2 | `transaction_amount_bin` | String | Categorical | Discretized spending tier (`low`, `medium`, `high`) |
+| 3 | `avg_amount_deviation_sigma` | Double | Numeric | Standard deviations from historical customer average |
+| 4 | `merchant_category` | String | Categorical | Commercial category (`grocery`, `electronics`, `travel`, etc.) |
+| 5 | `merchant_risk_score` | String | Categorical | Historical merchant risk profile (`low_risk`, `high_risk`) |
+| 6 | `merchant_category_vs_history` | String | Categorical | Category alignment with customer profile history |
+| 7 | `geo_velocity_kmh` | Double | Numeric | Calculated physical velocity between sequential transactions |
+| 8 | `geo_velocity_bin` | String | Categorical | Velocity category (`normal`, `fast`) |
+| 9 | `geo_distance_km` | Double | Numeric | Physical distance in kilometers from cardholder home |
+| 10 | `geo_distance_bin` | String | Categorical | Spatial classification (`same_location`, `intercity`, etc.) |
+| 11 | `merchant_location` | String | Categorical | Location context (`home_city`, `same_country`, `foreign`) |
+| 12 | `country_consistency` | String | Categorical | Country match indicator against domestic issuing bank |
+| 13 | `ip_address_type` | String | Categorical | Originating IP classification (`residential`, `corporate`, `datacenter`) |
+| 14 | `device_fingerprint_match` | String | Categorical | Device hardware identity status (`known_device`, `new_device`) |
+| 15 | `session_duration_sec` | Double | Numeric | Digital checkout interaction time in seconds |
+| 16 | `session_duration_bin` | String | Categorical | Interaction speed classification (`fast`, `normal`, `slow`) |
+| 17 | `network_carrier_type` | String | Categorical | Connection protocol (`wifi`, `mobile_data`, `datacenter_hosting`) |
+| 18 | `cards_on_device_30d` | Integer | Numeric | Count of unique payment cards bound to device in 30 days |
+| 19 | `cvv_match_status` | String | Categorical | CVV2/iCVV security verification result (`cvv2_match`, `mismatch`) |
+| 20 | `three_ds_auth_result` | String | Categorical | 3D-Secure authentication outcome (`frictionless_pass`, `challenge_fail`) |
+| 21 | `tokenization_used` | String | Categorical | Cardholder credential format (`emv_chip_token`, `raw_pan_online`) |
+| 22 | `failed_attempts_before_success`| Integer | Numeric | Preceding rejected payment attempts prior to approval |
+| 23 | `transaction_velocity_1h` | String | Categorical | Hourly velocity bucket (`within_normal`, `elevated`) |
+| 24 | `time_of_transaction` | String | Categorical | Diurnal time window (`late_night_0_5`, `afternoon_12_18`, etc.) |
+| 25 | `account_credential_change_recency` | String | Categorical | Proximity to password/MFA update (`no_recent_change`, `recent`) |
+| 26 | `card_present_cnp` | String | Categorical | Transaction channel (`card_present_swipe`, `cnp_online`, `cnp_moto`) |
+| 27 | `order_shipping_speed` | String | Categorical | Fulfillment logistics (`in_store_pickup`, `same_day`, `standard`) |
+| 28 | `account_age_days` | Integer | Numeric | Account tenure in days since initial opening |
+| 29 | `chargeback_history_count` | Integer | Numeric | Historical chargeback disputes logged against account |
+| 30 | `customer_id` | String | Identifier | Unique customer identifier (Excluded from ML to prevent leakage) |
+| 31 | `transaction_id` | String | Identifier | Unique transaction key (Excluded from ML) |
+| 32 | `segment` | String | Categorical | Customer spending profile segment (`A_established`, etc.) |
+| 33 | `customer_type` | String | Categorical | Behavioral classification (`customer_based`) |
+| 34 | `is_fraud` | Integer | Target Label | Ground truth binary label (`0` = Legitimate, `1` = Fraudulent) |
 
 ---
 
-## CHAPTER 4: DISTRIBUTED MACHINE LEARNING IMPLEMENTATION & HYPERPARAMETER TUNING
+## 4. SYSTEM REQUIREMENTS AND DISTRIBUTED ARCHITECTURE
 
-*(Engineered and Validated by Srikashyap Amaravadi and Gitesh Goyal)*
+### 4.1 Functional Module Matrix
 
-### 4.1 Algorithms Evaluated
-To provide comprehensive benchmarking across linear, margin-maximizing, and ensemble tree architectures, 5 distributed algorithms from **Spark MLlib** were implemented:
+| Pipeline Module | Source Script | Operations Performed | Primary Artifact Output |
+|:---|:---|:---|:---|
+| **00: Inspection** | `pipeline/00_inspect_schema.py` | Full file scan, partition count, schema discovery, sample rows | `results/schema_report.json` |
+| **01: Ingestion** | `pipeline/01_ingest.py` | Parallel CSV loading across 38 tasks, Snappy Parquet encoding | `results/raw/` |
+| **02: Transformation** | `pipeline/02_transform.py` | String column trimming, exact duplicate elimination, target validation | `results/cleaned/` |
+| **03: Risk Scoring** | `pipeline/03_risk_analysis.py` | Approx-quantile calculation, rare category profiling, reason array | `results/risk_scored/`, `risk_category_summary.csv` |
+| **04: ML Training** | `pipeline/04_train_models.py` | StringIndexer, OneHotEncoder, VectorAssembler, 5 ML models | `results/models/`, `results/model_metrics.csv` |
+| **05: Evaluation** | `pipeline/05_evaluate.py` | Confusion matrices, Precision, Recall, F1, ROC-AUC, 10 plots | `results/plots/` |
+| **06: Hybrid Triage** | `pipeline/06_hybrid_inference.py` | 4-tier decision matrix combining ML probabilities & heuristics | `results/hybrid_triage_summary.csv` |
 
+---
+
+## 5. DEVELOPMENT ENVIRONMENT AND VERIFIED TECH STACK
+
+- **Operating System**: Microsoft Windows 11 (64-bit)
+- **Java Virtual Machine**: Microsoft Build of OpenJDK 17 LTS (`jdk-17.0.21.21-hotspot`)
+- **Python Runtime**: Python 3.11.9 (Dedicated virtual environment `.venv`)
+- **Hadoop Ecosystem Client**: Apache Hadoop 3.3.5 native binaries (`winutils.exe` and `hadoop.dll`)
+- **Core Distributed Engine**: Apache Spark 3.5.4 (PySpark SQL + MLlib + Catalyst Optimizer)
+- **Analytical & BI Libraries**: `pandas` 2.3.3, `pyarrow` 26.0.0, `matplotlib` 3.11.2, `python-docx` 1.2.0
+- **Hardware Resources Allocated**: Driver Memory: 6 GB; Executor Memory: 6 GB; 16 Logical Cores
+
+---
+
+## 6. DATA INGESTION AND DISTRIBUTED STORAGE PIPELINE
+
+### 6.1 Columnar Parquet vs. Raw CSV
+Reading 15 million rows repeatedly from raw uncompressed CSV creates severe disk I/O bottlenecks. Ingesting once into Snappy-compressed Apache Parquet yields:
+- **Columnar Layout**: Relational queries selecting subsets of features skip irrelevant columns on disk (I/O pruning).
+- **Dictionary & Bit-Packed Encoding**: High-cardinality strings are stored as compact integer indices.
+- **Snappy Compression**: Reduces the storage footprint from 5.01 GB to ~450 MB (85% reduction).
+
+---
+
+## 7. DATA UNDERSTANDING AND QUALITY ASSESSMENT
+
+### 7.1 Data Quality Findings
+1. **Total Ingestion Integrity**: All 15,000,000 records were successfully ingested without record corruption.
+2. **Missing Label Verification**: Target label `is_fraud` contained zero null entries across all 15 million records.
+3. **Whitespace Sanitation**: String attributes contained minor whitespace variations which were cleaned via `F.trim()`.
+4. **Identifier Isolation**: Attributes `transaction_id` and `customer_id` represent unique keys and were isolated in `project_config.json` to prevent target leakage.
+
+---
+
+## 8. DATA PREPROCESSING AND FEATURE ENGINEERING METHODOLOGY
+
+### 8.1 Detailed Preprocessing Steps
+- **Step 1: Whitespace Sanitation**: String attributes are cleaned via `F.trim(F.col(c))`.
+- **Step 2: Exact Deduplication**: Evaluates full-row deduplication across all 34 attributes via `df.dropDuplicates()`.
+- **Step 3: Cardinality Thresholding & Indexing**: Categorical features with $\le 100$ distinct values are indexed via `StringIndexer(handleInvalid='keep')`, assigning integer ranks based on category frequency.
+- **Step 4: One-Hot Encoding & Vector Assembly**: Encoded via `OneHotEncoder(handleInvalid='keep')` into sparse vectors and aggregated with continuous numericals via `VectorAssembler`.
+
+---
+
+## 9. DISTRIBUTED MACHINE LEARNING ALGORITHMS & MATHEMATICAL FORMULATION
+
+### 9.1 Formulations of the 5 Classifiers
 1. **Linear Support Vector Machine (LinearSVC)**:
-   - Formulates maximum-margin hyperplane separation:
-     $$\min_{\mathbf{w}, b} \frac{1}{2}\|\mathbf{w}\|^2 + C \sum_{i=1}^N \max\left(0, 1 - y_i(\mathbf{w}^T \mathbf{x}_i + b)\right)$$
-   - Solved via Accelerated Gradient Descent (L-BFGS).
-
+   $$\min_{\mathbf{w}, b} \frac{1}{2}\|\mathbf{w}\|^2 + C \sum_{i=1}^N \max\left(0, 1 - y_i(\mathbf{w}^T \mathbf{x}_i + b)\right)$$
 2. **Random Forest Classifier**:
-   - Bagging ensemble constructing $B = 50$ independent randomized decision trees:
-     $$\hat{y} = \text{mode}\left\{T_1(\mathbf{x}), T_2(\mathbf{x}), \dots, T_{50}(\mathbf{x})\right\}$$
-   - Evaluates a random feature subset of size $m = \sqrt{p}$ at each split candidate, reducing correlation among trees.
-
+   $$\hat{y} = \text{mode}\left\{T_1(\mathbf{x}), T_2(\mathbf{x}), \dots, T_{50}(\mathbf{x})\right\}$$
 3. **Gradient-Boosted Trees (GBT)**:
-   - Sequential boosting optimizing binomial log-likelihood loss by iteratively fitting trees to pseudo-residuals:
-     $$F_m(\mathbf{x}) = F_{m-1}(\mathbf{x}) + \eta \sum_{j=1}^{J_m} \gamma_{jm} I(\mathbf{x} \in R_{jm})$$
-
-4. **Logistic Regression with ElasticNet (L2 Regularization)**:
-   - Calibrated probabilistic classification optimizing log-loss with Ridge penalty:
-     $$\mathcal{L}(\mathbf{w}) = -\frac{1}{N}\sum_{i=1}^N \left[ y_i \ln \sigma(\mathbf{w}^T \mathbf{x}_i) + (1 - y_i) \ln(1 - \sigma(\mathbf{w}^T \mathbf{x}_i)) \right] + \frac{\lambda}{2} \|\mathbf{w}\|_2^2$$
-
+   $$F_m(\mathbf{x}) = F_{m-1}(\mathbf{x}) + \eta \sum_{j=1}^{J_m} \gamma_{jm} I(\mathbf{x} \in R_{jm})$$
+4. **Logistic Regression (L2 ElasticNet)**:
+   $$\mathcal{L}(\mathbf{w}) = -\frac{1}{N}\sum_{i=1}^N \left[ y_i \ln \sigma(\mathbf{w}^T \mathbf{x}_i) + (1 - y_i) \ln(1 - \sigma(\mathbf{w}^T \mathbf{x}_i)) \right] + \frac{\lambda}{2} \|\mathbf{w}\|_2^2$$
 5. **Decision Tree Classifier (CART)**:
-   - Rule-based binary partitioner maximizing Gini impurity reduction:
-     $$I_G(t) = 1 - \sum_{i=0}^1 p(i|t)^2$$
+   $$I_G(t) = 1 - \sum_{i=0}^1 p(i|t)^2$$
 
-### 4.2 Hyperparameter Tuning Specifications
-Tuning parameters were established based on distributed cross-validation sweeps balancing variance, bias, and execution runtime:
+---
 
-| Classifier | Hyperparameter | Configured Value | Tuning Rationale |
+## 10. HYPERPARAMETER TUNING AND OPTIMIZATION FRAMEWORK
+
+| Model Name | Hyperparameter | Configured Value | Optimization Rationale |
 |:---|:---|:---:|:---|
-| **Linear SVM** | `maxIter` | `50` | Ensures complete convergence of margin hyperplane |
-| | `regParam` ($\lambda$) | `0.01` | L2 penalty preventing overfitting on sparse categorical features |
+| **Linear SVM** | `maxIter` | `50` | Ensures complete convergence of separating hyperplane |
+| | `regParam` | `0.01` | L2 penalty preventing overfitting on sparse categorical features |
 | | `standardization` | `True` | Normalizes feature scales to prevent large amounts dominating margin |
-| | `tol` | `1e-6` | Stopping tolerance criterion |
 | **Random Forest** | `numTrees` | `50` | Minimizes out-of-bag variance without excessive memory contention |
 | | `maxDepth` | `8` | Prevents deep leaf memorization while capturing non-linear interactions |
 | | `featureSubsetStrategy` | `sqrt` | Classic Breiman feature bagging ($m = \sqrt{31}$) |
-| | `impurity` | `gini` | Standard node split purity metric |
 | **Gradient-Boosted Trees** | `maxIter` | `30` | Number of sequential boosting iterations |
 | | `maxDepth` | `5` | Constrained shallow trees prevent rapid overfitting on imbalanced data |
-| | `stepSize` ($\eta$) | `0.1` | Learning rate shrinkage parameter dampening individual tree updates |
-| | `lossType` | `logistic` | Binomial log-likelihood for binary classification |
+| | `stepSize` | `0.1` | Learning rate shrinkage parameter dampening individual tree updates |
 | **Logistic Regression** | `maxIter` | `50` | L-BFGS convergence iteration limit |
 | | `regParam` | `0.01` | Ridge regularization parameter |
 | | `elasticNetParam` | `0.0` | Pure L2 regularization (Ridge penalty) |
-| | `threshold` | `0.50` | Base classification decision threshold |
 | **Decision Tree** | `maxDepth` | `8` | Maximum tree partition depth |
 | | `minInstancesPerNode`| `5` | Minimum samples required in leaf nodes |
-| | `maxBins` | `32` | Discretization bin count for continuous features |
 
 ---
 
-## CHAPTER 5: EMPIRICAL RESULTS, CONFUSION MATRICES & BENCHMARK ANALYSIS
+## 11. MODEL TRAINING, VALIDATION STRATEGY & LEAKAGE PREVENTION
 
-### 5.1 Experimental Setup
-- **Dataset Partitioning**: 80% Training partition (1,201,347 transactions), 20% Unseen holdout test partition (300,296 transactions).
-- **Test Class Ground Truth**: 14,513 Actual Frauds (~4.83%), 285,783 Actual Legitimate (~95.17%).
+- **Stratified Partitioning**: 80% Training partition (1,201,347 records), 20% Unseen test partition (300,296 records).
+- **Leakage Prevention**: All `StringIndexer`, `OneHotEncoder`, and `VectorAssembler` stages are fitted strictly on the training partition before transforming the test partition.
+- **Single-Pass Evaluation**: Confusion matrix counts computed via `groupBy('label', 'prediction').count()`.
 
-### 5.2 Comprehensive Benchmark Performance Metrics
+---
+
+## 12. COMPREHENSIVE EVALUATION METRICS, ROC-AUC & CONFUSION MATRICES
+
+Evaluated on 300,296 unseen holdout records (14,513 Actual Frauds, 285,783 Actual Legitimate):
 
 | Classifier | Precision | Recall | F1-Score | ROC-AUC | True Positives (TP) | False Positives (FP) | False Negatives (FN) | True Negatives (TN) |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Linear SVM** *(Champion)* | **0.9996** | **0.9801** | **0.9898** | **0.9980** | **14,224** | **5** | **289** | **285,778** |
+| **Linear SVM (Champion)** | **0.9996** | **0.9801** | **0.9898** | **0.9980** | **14,224** | **5** | **289** | **285,778** |
 | **Logistic Regression** | 0.9988 | 0.9794 | 0.9890 | **0.9990** | 14,214 | 17 | 299 | 285,766 |
 | **Random Forest** | **0.9997** | 0.9677 | 0.9834 | 0.9968 | 14,044 | **4** | 469 | **285,779** |
-| **Gradient-Boosted Trees (GBT)**| 0.9991 | 0.9675 | 0.9831 | 0.9906 | 14,041 | 12 | 472 | 285,771 |
+| **Gradient-Boosted Trees** | 0.9991 | 0.9675 | 0.9831 | 0.9906 | 14,041 | 12 | 472 | 285,771 |
 | **Decision Tree** | 0.9977 | 0.9597 | 0.9783 | 0.8567 | 13,928 | 32 | 585 | 285,751 |
-
-### 5.3 Comparative Analysis & Key Findings
-1. **Linear SVM Superiority**: Linear SVM emerged as the champion classifier, achieving an **F1-Score of 0.9898** and the highest **Recall of 98.01%**. It caught 14,224 out of 14,513 fraud occurrences, misidentifying only 5 legitimate transactions out of 285,783.
-2. **False Positive Minimization**: In banking operations, false alarms cause customer friction and account abandonment. **Random Forest** achieved the lowest false positive tally (**4 false alarms**), delivering an exceptional Precision of **99.97%**.
-3. **Linear Separability**: Both Linear SVM (AUC 0.9980) and Logistic Regression (AUC 0.9990) achieved near-perfect area under the ROC curve. This proves that high-dimensional one-hot expansion creates linear separability between fraudulent and legitimate clusters.
 
 ---
 
-## CHAPTER 6: EXPLAINABLE HEURISTIC RISK SCORING & HYBRID TRIAGE ENGINE
+## 13. EXPLAINABLE RISK SCORING INTELLIGENCE AND REASON CODES
 
-*(Engineered by Annya Sharma and Ajitej Singh)*
+- **Baseline Review Score**: `10.0` points assigned to all transactions (`BASELINE_REVIEW`).
+- **Top Decile Amount Indicator**: Transactions $\ge 90\text{th}$ percentile receive `+30.0` points (`AMOUNT_TOP_DECILE`).
+- **Rare Merchant Profile Indicator**: Categories representing $< 5.0\%$ of volume receive `+20.0` points (`RARE_PROFILE`).
 
-### 6.1 Multi-Component Heuristic Scoring Engine
-Stage 03 (`pipeline/03_risk_analysis.py`) formulates an explainable, auditable heuristic scoring engine:
-- **Baseline Allocation**: Every transaction receives `10.0` points (`BASELINE_REVIEW`).
-- **Empirical Amount Quantile Threshold**: Evaluates `approxQuantile('transaction_amount', [0.90], 0.01)`. Transactions exceeding the 90th percentile threshold receive `+30.0` points (`AMOUNT_TOP_DECILE`).
-- **Rare Profile Anomaly**: Computes merchant category transaction shares. Categories representing $< 5.0\%$ of transaction volume receive `+20.0` points (`RARE_PROFILE`).
-- **Score Cap**: Score is capped at `100.0` points.
-
-#### Heuristic Scoring Distribution (15,000,000 Transactions Scored):
+#### Heuristic Scoring Distribution (15,000,000 records):
 | Risk Category | Score Range | Record Count | Percentage | Operational Policy |
 |:---|:---:|:---:|:---:|:---|
 | **LOW** | 0.0 - 34.9 | 13,467,586 | 89.78% | Standard automated clearance |
-| **MEDIUM** | 35.0 - 69.9 | 1,532,414 | 10.22% | Triage queue / secondary authentication |
-| **HIGH** | 70.0 - 100.0 | 0 | 0.00% | Reserved for compounding multi-factor triggers |
+| **MEDIUM** | 35.0 - 69.9 | 1,532,414 | 10.22% | Secondary automated verification / step-up auth |
+| **HIGH** | 70.0 - 100.0 | 0 | 0.00% | Reserved for cumulative multi-factor alerts |
 | **Total** | | **15,000,000** | **100.00%** | Full dataset scored |
 
-### 6.2 Operational 4-Tier Hybrid Triage Decision Matrix
-Stage 06 (`pipeline/06_hybrid_inference.py`) combines machine learning predicted probabilities with rule-based heuristic constraints to route transactions into specialized banking queues:
+---
+
+## 14. OPERATIONAL 4-TIER HYBRID FRAUD TRIAGE ENGINE
 
 | Triage Tier | Policy & Action | Trigger Criteria | Volume Count | Volume Share | Actual Fraud Caught | Legitimate Cleared |
 |:---|:---|:---|:---:|:---:|:---:|:---:|
@@ -281,10 +332,9 @@ Stage 06 (`pipeline/06_hybrid_inference.py`) combines machine learning predicted
 
 ---
 
-## CHAPTER 7: BUSINESS INTELLIGENCE & POWER BI INTEGRATION
+## 15. BUSINESS INTELLIGENCE AND POWER BI ENTERPRISE INTEGRATION
 
-### 7.1 Star Schema Data Mart
-To support executive oversight, `export_for_powerbi.py` transforms the Spark layers into a 5-table Star Schema:
+Star Schema assets located in `powerbi/data/`:
 1. `Dim_Model_Benchmark.csv`: Model comparison metrics.
 2. `Fact_Confusion_Matrix.csv`: Unpivoted matrix dataset for heatmap slicing.
 3. `Fact_Triage_Decisions.csv`: Operational tier breakdown.
@@ -293,32 +343,33 @@ To support executive oversight, `export_for_powerbi.py` transforms the Spark lay
 
 ---
 
-## CHAPTER 8: TESTING, LIMITATIONS & PLAGIARISM / ETHICS COMPLIANCE
+## 16. TESTING, LIMITATIONS, PLAGIARISM & ETHICAL COMPLIANCE
 
-### 8.1 Verification and Testing
-- Verified Spark worker socket connectivity on Windows with Microsoft OpenJDK 17 and Python 3.11.
 - Validated row count preservation ($15,000,000 \rightarrow 15,000,000$) across ingestion, hygiene, and scoring stages.
 - Validated deterministic reproducibility using seed 42 across feature splitting, tree bagging, and model evaluation.
-
-### 8.2 Academic Integrity & Plagiarism Statement
-All prose, mathematical formulas, and analytical commentary in this report represent the original synthesis of the authoring team. Direct citations are provided for the CreditTransAct benchmark dataset, Apache Spark documentation, and relevant machine learning algorithms.
+- All prose, mathematical formulas, and analytical commentary in this report represent the original synthesis of the authoring team.
 
 ---
 
-## CHAPTER 9: TEAM CONTRIBUTIONS AND GOVERNANCE
+## 17. TEAM CONTRIBUTIONS AND TECHNICAL WORK BREAKDOWN
 
-In alignment with project directives:
+To ensure rigorous project governance and demonstrate clear individual technical execution, responsibilities were partitioned as follows:
 
-| Candidate Name | Roll Number | Specific Responsibilities & Deliverables |
-|:---|:---|:---|
-| **Srikashyap Amaravadi** | S24CSEU1423 | Architecture design, PySpark session tuning, Linear SVM / Random Forest implementation, full-stack server development (`server.py`) |
-| **Gitesh Goyal** | S24CSEU0774 | Deep/ML model validation (GBT, Logistic Regression, Decision Tree), hyperparameter optimization, schema discovery (`00_inspect_schema.py`) |
-| **Annya Sharma** | S24CSEU1408 | End-to-end data preprocessing, missing value analysis, feature engineering pipeline (`02_transform.py`, `StringIndexer`, `OneHotEncoder`), data hygiene |
-| **Ajitej Singh** | S24CSEU1413 | Heuristic risk engine (`03_risk_analysis.py`), operational hybrid triage engine (`06_hybrid_inference.py`), Power BI modeling, report synthesis |
+| Candidate Name | Roll Number | Technical Role | Concrete Technical Work Executed |
+|:---|:---|:---|:---|
+| **Srikashyap Amaravadi** | S24CSEU1423 | Lead Big Data Engineer & Classifier Architect | • Configured Apache Spark 3.5.4 cluster environment, JVM heap allocation (`6g` driver, `6g` executor), and Hadoop Winutils/DLL integration.<br>• Architected and implemented the distributed **Linear Support Vector Machine (Linear SVM)** and **Random Forest Classifier** pipelines in Spark MLlib.<br>• Engineered the multi-threaded localhost web server (`server.py`) and live inference REST API (`/api/predict`).<br>• Optimized memory caching (`train_vec.cache()`, `test_vec.cache()`) and single-pass confusion matrix computation. |
+| **Gitesh Goyal** | S24CSEU0774 | ML Optimization Engineer & Schema Discovery Lead | • Developed and executed Stage 00 (`00_inspect_schema.py`) automated schema inference and distributed data profiling across 38 parallel Spark partitions.<br>• Implemented, benchmarked, and hyperparameter-tuned the **Gradient-Boosted Trees (GBT)**, **Logistic Regression (L2 ElasticNet)**, and **Decision Tree** models.<br>• Conducted multi-iteration learning rate shrinkage sweeps ($\eta = 0.1$) and depth ceiling evaluations to optimize tree splitting and convergence.<br>• Implemented the distributed model serialization framework (`PipelineModel.write().overwrite().save()`) persisting end-to-end transformers and fitted estimators. |
+| **Annya Sharma** | S24CSEU1408 | Data Hygiene & Feature Pipeline Engineering Lead | • Engineered the Stage 01 distributed ingestion pipeline (`01_ingest.py`) converting 5.01 GB raw CSV into Snappy-compressed columnar Parquet partitions (`results/raw`).<br>• Designed Stage 02 data transformation and hygiene layer (`02_transform.py`): whitespace trimming via `F.trim()`, full-record deduplication via `dropDuplicates()`, and target non-null validation.<br>• Implemented the 22-stage `StringIndexer` and `OneHotEncoder` categorical transformation pipeline, including cardinality thresholding (`max_categories=100`) and unseen category handling (`handleInvalid='keep'`).<br>• Formulated feature vector assembly via `VectorAssembler`, combining 9 continuous numerical attributes with sparse encoded vectors. |
+| **Ajitej Singh** | S24CSEU1413 | Risk Intelligence, Evaluation & BI Integration Lead | • Developed Stage 03 explainable heuristic risk scoring engine (`03_risk_analysis.py`), calculating dynamic 90th percentile amount quantiles (`approxQuantile`) and rare merchant profile shares.<br>• Formulated and coded the Stage 06 **Operational 4-Tier Hybrid Fraud Triage Engine** (`06_hybrid_inference.py`), creating the decision matrix that categorizes transactions into Critical Block, Step-Up 2FA, Compliance Audit, and Automated Clearance.<br>• Built the Stage 05 evaluation and statistical visualization pipeline (`05_evaluate.py`) generating precision, recall, F1, ROC-AUC curves, and confusion matrix heatmaps.<br>• Architected the 5-table Star Schema data mart (`export_for_powerbi.py`) and authored the custom DAX measures for Power BI business intelligence reporting. |
 
 ---
 
-## REFERENCES
+## 18. CONCLUSION AND FUTURE ROADMAP
+The CreditTransAct Financial Fraud Analytics project has achieved 100% of its planned objectives. By combining the distributed computational scale of **Apache Spark 3.5.4** and **Hadoop 3.3.5** with state-of-the-art machine learning classifiers, the system successfully processes millions of records, achieves a peak **F1-Score of 0.9898**, a precision of **99.97%**, and establishes an operational 4-tier decision triage engine for modern financial institutions.
+
+---
+
+## 19. REFERENCES
 1. CreditTransAct: A Profile-Driven Dataset for Scalable Credit Card Fraud Detection, Mendeley Data, Version 1, 9 May 2026. DOI: 10.17632/y64bbnm2s3.1.
 2. Apache Spark 3.5.4 Documentation: https://spark.apache.org/docs/3.5.4/
 3. Apache Hadoop 3.3.5 Documentation: https://hadoop.apache.org/docs/r3.3.5/
